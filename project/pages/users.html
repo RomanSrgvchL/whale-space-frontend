@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пользователи</title>
+    <link rel="stylesheet" href="../styles/global.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<div class="container">
+    <div style="display: flex;">
+        <div id="people" style="width: 60%; display: flex; flex-wrap: wrap;"></div>
+        <div id="messageForm" style="width: 40%; padding: 20px;">
+            <h3>Написать пользователю</h3>
+            <input id="usernameInput" placeholder="Имя пользователя"
+                   style="width: 100%; padding: 8px; margin-bottom: 10px;">
+            <button id="sendMessageBtn" style="padding: 8px 16px;">Написать</button>
+            <p id="resultMessage"></p>
+        </div>
+    </div>
+</div>
+
+<script src="../scripts/navbar.js"></script>
+<script src="../scripts/get-users.js"></script>
+<script src="../scripts/onload.js"></script>
+
+</body>
+</html>

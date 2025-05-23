@@ -1,0 +1,27 @@
+nav {
+    background: #6465cf;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    max-width: 85%;
+    min-height: 50px;
+    margin: 15px auto 0;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+}
+
+nav a:hover {
+    opacity: 0.8;
+}
+
+nav .right-side {
+    margin-left: auto;
+}
+
+nav .right-side a {
+    margin-left: 20px;
+}
