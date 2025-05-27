@@ -9,7 +9,7 @@
     flex-direction: column;
 }
 
-#chat-title {
+#discussion-title {
     font-size: 28px;
     font-weight: 700;
     background: linear-gradient(90deg, #4b6cb7, #182848);
@@ -58,29 +58,38 @@
 .message {
     padding: 10px 14px;
     border-radius: 12px;
-    max-width: 50%;
+    max-width: 80%;
     font-size: 17px;
     line-height: 1.4;
     word-wrap: break-word;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    background-color: #e3e8ff;
+    align-self: flex-start;
 }
 
 .message.self {
-    align-self: flex-start;
     background-color: #dcffe4;
     border-left: 3px solid #2ecc71;
+    border-right: 3px solid #2ecc71;
 }
 
 .message.other {
-    align-self: flex-end;
     background-color: #dbe9ff;
+    border-left: 3px solid #4b6cb7;
     border-right: 3px solid #4b6cb7;
+}
+
+.message strong {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: #1a3f8f;
 }
 
 .message small {
     display: block;
     margin-top: 4px;
-    color: #777;
+    color: #555;
     font-size: 14px;
 }
 

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обсуждения</title>
+    <script src="../scripts/config.js"></script>
+    <link rel="stylesheet" href="../styles/global.css">
+    <link rel="stylesheet" href="../styles/discussions.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<div class="container">
+    <div id="scrollable-discussions">
+        <div id="discussion-form-container" style="display: none;">
+            <h3>Создать обсуждение:</h3>
+            <form id="create-discussion-form">
+                <input name="title" placeholder="Тема обсуждения">
+                <div class="form-actions">
+                    <button type="submit">Создать</button>
+                    <div id="message"></div>
+                </div>
+            </form>
+        </div>
+        <div id="discussions-list" class="discussions-list"></div>
+    </div>
+</div>
+
+<script src="../scripts/navbar.js"></script>
+<script src="../scripts/discussions.js"></script>
+<script src="../scripts/onload.js"></script>
+
+</body>
+</html>

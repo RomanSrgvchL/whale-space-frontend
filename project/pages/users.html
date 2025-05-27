@@ -1,30 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Пользователи</title>
-    <link rel="stylesheet" href="../styles/global.css">
+    <script src="../scripts/config.js"></script>
+    <link rel="stylesheet" href="../styles/global.css"/>
+    <link rel="stylesheet" href="../styles/users.css"/>
 </head>
 <body>
 
 <div id="navbar"></div>
 
 <div class="container">
-    <div style="display: flex;">
-        <div id="people" style="width: 60%; display: flex; flex-wrap: wrap;"></div>
-        <div id="messageForm" style="width: 40%; padding: 20px;">
-            <h3>Написать пользователю</h3>
-            <input id="usernameInput" placeholder="Имя пользователя"
-                   style="width: 100%; padding: 8px; margin-bottom: 10px;">
-            <button id="sendMessageBtn" style="padding: 8px 16px;">Написать</button>
-            <p id="resultMessage"></p>
+    <div class="main-layout">
+        <div id="people" class="people-list"></div>
+        <div id="message-form" class="message-form">
+            <h3>Написать пользователю:</h3>
+            <form id="start-dialog-form">
+                <input id="username-input" name="username" placeholder="Имя пользователя"/>
+                <button type="submit">Написать</button>
+            </form>
+            <div id="message"></div>
         </div>
     </div>
 </div>
 
 <script src="../scripts/navbar.js"></script>
-<script src="../scripts/get-users.js"></script>
+<script src="../scripts/users.js"></script>
 <script src="../scripts/onload.js"></script>
 
 </body>

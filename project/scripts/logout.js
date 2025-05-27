@@ -1,4 +1,4 @@
-fetch('http://localhost:8080/api/auth/logout', {
+fetch(`${API_BASE_URL}/auth/logout`, {
     method: 'POST',
     credentials: 'include'
 })

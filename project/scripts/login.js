@@ -11,7 +11,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
     };
 
     try {
-        const response = await fetch('http://localhost:8080/api/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -25,10 +25,12 @@ document.getElementById('login-form').addEventListener('submit', async function 
         if (response.ok) {
             messageElement.style.color = 'green';
             messageElement.textContent = result.message;
-            window.location.href = './home.html';
+            setTimeout(() => {
+                window.location.href = './home.html';
+            }, 750);
         } else {
             messageElement.style.color = 'red';
-            messageElement.textContent = result.message.replace(/;/g, '\n');
+            messageElement.textContent = result.message;
         }
     } catch (error) {
         messageElement.style.color = 'red';

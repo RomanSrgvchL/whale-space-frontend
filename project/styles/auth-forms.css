@@ -7,46 +7,82 @@
 
 form {
     background: #6465cf;
-    padding: 40px 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    min-width: 30%;
+    padding: 30px 30px 40px;
+    border-radius: 14px;]
+    min-width: 320px;
+    max-width: 400px;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    transition: box-shadow 0.3s ease;
 }
 
 label {
-    margin: 10px 0 5px;
-    font-weight: 500;
-    color: white;
+    margin: 12px 0 8px;
+    font-weight: 600;
+    color: #f0f0ff;
+    font-size: 17px;
+    letter-spacing: 0.03em;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 input {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    padding: 14px 18px;
+    border-radius: 8px;
+    border: none;
     font-size: 16px;
     outline: none;
+    box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #f0f0ff;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    font-weight: 500;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.02em;
+}
+
+input::placeholder {
+    color: #d0d0f0;
+}
+
+input:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    color: #fff;
 }
 
 button {
-    margin-top: 20px;
-    padding: 12px;
+    margin-top: 30px;
+    padding: 14px;
     background-color: #3b44c3;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 12px;
+    font-size: 18px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    box-shadow: 0 6px 14px rgba(59, 68, 195, 0.6);
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
 button:hover {
     background-color: #2a3094;
+    box-shadow: 0 8px 20px rgba(42, 48, 148, 0.8);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 10px rgba(42, 48, 148, 0.7);
 }
 
 #message {
-    margin-top: 15px;
-    text-align: center;
     white-space: pre-wrap;
+    margin-top: 12px;
+    font-size: 17px;
+    line-height: 1.3;
+    font-style: italic;
+    text-align: center;
+    user-select: none;
 }

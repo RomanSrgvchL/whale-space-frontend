@@ -1,4 +1,4 @@
-fetch('http://localhost:8080/api/auth/check', {
+fetch(`${API_BASE_URL}/auth/check`, {
     method: 'GET',
     credentials: 'include'
 })

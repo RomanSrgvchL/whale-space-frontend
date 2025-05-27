@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Чат</title>
+    <script src="../scripts/config.js"></script>
     <script src="../scripts/must-auth.js"></script>
     <script src="../libs/sockjs.js"></script>
     <script src="../libs/stomp.js"></script>
@@ -19,7 +20,7 @@
     <div id="messages" class="messages"></div>
     <form id="message-form">
         <div class="input-row">
-            <input id="message-input" type="text" placeholder="Введите сообщение" required />
+            <input id="message-input" type="text" placeholder="Введите сообщение"/>
             <button type="submit">Отправить</button>
         </div>
         <div id="error-msg" class="error-msg"></div>
@@ -27,8 +28,8 @@
 </div>
 
 
-<script src="../scripts/chat.js"></script>
 <script src="../scripts/navbar.js"></script>
+<script src="../scripts/chat.js"></script>
 <script src="../scripts/onload.js"></script>
 
 </body>

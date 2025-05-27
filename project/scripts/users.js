@@ -1,14 +1,20 @@
+function redirectWithDelay(url, delay = 750) {
+    setTimeout(() => {
+        window.location.href = url;
+    }, delay);
+}
+
 function initiateChatWithUser(inputUsername, currentUser) {
-    const resultMessage = document.getElementById('resultMessage');
+    const resultMessage = document.getElementById('message');
 
     // Получаем id второго пользователя по имени
-    fetch('http://localhost:8080/api/people/byName', {
+    fetch(`${API_BASE_URL}/people/byName`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify({ username: inputUsername })
+        body: JSON.stringify({username: inputUsername})
     })
         .then(userRes => {
             if (userRes.status === 404) {
@@ -21,14 +27,14 @@ function initiateChatWithUser(inputUsername, currentUser) {
                 const userId2 = targetUser.id;
 
                 // Проверяем, существует ли чат
-                fetch(`http://localhost:8080/api/chats/byUsers/${userId1}-${userId2}`, {
+                fetch(`${API_BASE_URL}/chats/byUsers/${userId1}-${userId2}`, {
                     method: 'GET',
                     credentials: 'include'
                 })
                     .then(chatRes => {
                         if (chatRes.status === 404) {
                             // Чат не найден — создаём
-                            fetch(`http://localhost:8080/api/chats/create/${userId1}-${userId2}`, {
+                            fetch(`${API_BASE_URL}/chats/create/${userId1}-${userId2}`, {
                                 method: 'POST',
                                 credentials: 'include'
                             })
@@ -40,7 +46,7 @@ function initiateChatWithUser(inputUsername, currentUser) {
                                     }
                                 })
                                 .then(chatId => {
-                                    window.location.href = `./chat.html?chatId=${chatId}`;
+                                    redirectWithDelay(`./chat.html?id=${chatId}`);
                                 })
                                 .catch(error => {
                                     resultMessage.textContent = 'Ошибка при создании чата';
@@ -49,7 +55,7 @@ function initiateChatWithUser(inputUsername, currentUser) {
                                 });
                         } else if (chatRes.ok) {
                             chatRes.json().then(chatId => {
-                                window.location.href = `./chat.html?chatId=${chatId}`;
+                                redirectWithDelay(`./chat.html?id=${chatId}`);
                             });
                         } else {
                             throw new Error('Ошибка получения чата');
@@ -64,7 +70,7 @@ function initiateChatWithUser(inputUsername, currentUser) {
         });
 }
 
-fetch('http://localhost:8080/api/people/createdAtDesc', {
+fetch(`${API_BASE_URL}/people/createdAtDesc`, {
     method: 'GET',
     headers: {
         'Content-Type': 'application/json'
@@ -75,24 +81,30 @@ fetch('http://localhost:8080/api/people/createdAtDesc', {
     .then(people => {
         const peopleContainer = document.getElementById('people');
         people.forEach(person => {
+            const role = person.role.replace(/^ROLE_/, '');
             const personDiv = document.createElement('div');
-            personDiv.style.width = '60%';
-            personDiv.style.padding = '10px';
-            personDiv.style.boxSizing = 'border-box';
+            personDiv.classList.add('person-card');
             personDiv.innerHTML = `
-                <p><strong>Имя:</strong> ${person.username}</p>
-                <p><strong>Дата регистрации:</strong> ${new Date(person.createdAt).toLocaleString()}</p>
-                <hr>
-            `;
+            <div class="person-info">
+                <p class="username">${person.username}</p>
+                <p class="registered-label">
+                    Дата регистрации:<br>
+                    <span class="date">${new Date(person.createdAt).toLocaleString()}</span>
+                </p>
+                <p class="role">${role})}</p>
+            </div>
+             `;
             peopleContainer.appendChild(personDiv);
         });
 
-        document.getElementById('sendMessageBtn').addEventListener('click', () => {
-            const input = document.getElementById('usernameInput').value.trim();
-            const resultMessage = document.getElementById('resultMessage');
+        document.getElementById('start-dialog-form').addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const input = document.getElementById('username-input').value.trim();
+            const resultMessage = document.getElementById('message');
 
             // Сначала проверка авторизации
-            fetch('http://localhost:8080/api/auth/check', {
+            fetch(`${API_BASE_URL}/auth/check`, {
                 method: 'GET',
                 credentials: 'include'
             })
@@ -104,7 +116,7 @@ fetch('http://localhost:8080/api/people/createdAtDesc', {
                     }
 
                     // Запрос на получение имени текущего пользователя
-                    fetch('http://localhost:8080/api/people/yourself', {
+                    fetch(`${API_BASE_URL}/people/yourself`, {
                         method: 'GET',
                         credentials: 'include'
                     })
@@ -119,7 +131,7 @@ fetch('http://localhost:8080/api/people/createdAtDesc', {
                             }
 
                             if (input === currentUsername) {
-                                resultMessage.textContent = 'Себе написать нельзя';
+                                resultMessage.textContent = 'Вы не можете написать самому себе';
                                 resultMessage.style.color = 'red';
                                 return;
                             }
@@ -128,7 +140,6 @@ fetch('http://localhost:8080/api/people/createdAtDesc', {
                             if (userExists) {
                                 resultMessage.textContent = `Пользователь "${input}" найден!`;
                                 resultMessage.style.color = 'green';
-
                                 initiateChatWithUser(input, data);
                             } else {
                                 resultMessage.textContent = `Пользователь "${input}" не найден`;

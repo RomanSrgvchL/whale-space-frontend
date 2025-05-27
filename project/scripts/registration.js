@@ -18,7 +18,7 @@ document.getElementById('registration-form').addEventListener('submit', async fu
     };
 
     try {
-        const response = await fetch('http://localhost:8080/api/auth/register', {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -32,10 +32,12 @@ document.getElementById('registration-form').addEventListener('submit', async fu
         if (response.status === 201) {
             messageElement.style.color = 'green';
             messageElement.textContent = result.message;
-            window.location.href = './login.html';
+            setTimeout(() => {
+                window.location.href = './login.html';
+            }, 750);
         } else {
             messageElement.style.color = 'red';
-            messageElement.textContent = result.message.replace(/;/g, '\n');
+            messageElement.textContent = result.message;
         }
     } catch (error) {
         messageElement.style.color = 'red';
