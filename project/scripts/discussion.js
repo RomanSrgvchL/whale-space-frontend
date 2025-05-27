@@ -34,7 +34,6 @@ function addReply(reply, currentUser) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-
 // Отображение обсуждения
 function renderDiscussion(discussion, currentUser) {
     discussionTitleElem.textContent = discussion.title;
@@ -68,7 +67,9 @@ Promise.all([
                 const msgObj = JSON.parse(message.body);
                 if (msgObj.success) {
                     addReply(msgObj.replyDto, currentUser);
-                    input.value = '';
+                    if (msgObj.replyDto.sender.id === currentUser.id) {
+                        input.value = '';
+                    }
                 }
             });
 

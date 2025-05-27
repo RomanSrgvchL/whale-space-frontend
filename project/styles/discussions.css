@@ -1,18 +1,15 @@
 .container {
     margin: 0 auto;
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
     box-sizing: border-box;
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-height: 84vh !important;
+    height: 100% !important;
 }
 
 #scrollable-discussions {
-    flex: 1;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -125,24 +122,34 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
     gap: 8px;
+    flex-wrap: nowrap;
 }
 
 .discussion-info {
+    padding-right: 30px;
     flex: 1 1 auto;
 }
 
 .discussion-title {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 600;
     color: #1a3f8f;
     margin-bottom: 4px;
+    word-break: break-word;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .discussion-meta {
     font-size: 14px;
     color: #555;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .discussion-button {
@@ -157,7 +164,6 @@
     border-radius: 12px;
     height: 44px;
     white-space: nowrap;
-    margin-left: 0;
 }
 
 .discussion-button:hover {

@@ -6,13 +6,10 @@ document.addEventListener('DOMContentLoaded', function () {
     fetch(`${API_BASE_URL}/people/yourself`, {
         credentials: 'include'
     })
-        .then(response => {
-            if (!response.ok) return null;
-            return response.json();
-        })
+        .then(response => response.ok ? response.json() : null)
         .then(user => {
             currentUser = user;
-            if (user && user.role === 'ROLE_ADMIN') {
+            if (user?.role === 'ROLE_ADMIN') {
                 document.getElementById('discussion-form-container').style.display = 'block';
             }
             loadDiscussions();
@@ -46,21 +43,16 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch(`${API_BASE_URL}/discussions/create`, {
                 method: 'POST',
                 credentials: 'include',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({title})
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title })
             })
                 .then(async response => {
                     if (!response.ok) {
                         let errorMessage = 'Не удалось создать обсуждение';
                         try {
                             const errorData = await response.json();
-                            if (errorData?.message) {
-                                errorMessage = errorData.message;
-                            }
-                        } catch {
-                        }
+                            if (errorData?.message) errorMessage = errorData.message;
+                        } catch {}
                         throw new Error(errorMessage);
                     }
                     return response.json();
@@ -102,17 +94,55 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     const meta = document.createElement('div');
                     meta.className = 'discussion-meta';
-                    meta.textContent = `Создал: ${discussion.creator.username} • ${new Date(discussion.createdAt)
-                        .toLocaleString()}`;
+                    meta.textContent = `Создал: ${discussion.creator.username} • ${new Date(discussion.createdAt).toLocaleString()}`;
 
                     info.appendChild(title);
                     info.appendChild(meta);
 
-                    const button = document.createElement('button');
-                    button.className = 'discussion-button';
-                    button.textContent = 'Перейти';
+                    const buttonGroup = document.createElement('div');
+                    buttonGroup.className = 'button-group';
 
-                    button.addEventListener('click', () => {
+                    if (currentUser?.role === 'ROLE_ADMIN') {
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'discussion-button delete-button';
+                        deleteButton.textContent = 'Удалить';
+
+                        deleteButton.addEventListener('click', () => {
+                            fetch(`${API_BASE_URL}/discussions/delete`, {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ title: discussion.title })
+                            })
+                                .then(async response => {
+                                    messageDiv.textContent = '';
+                                    messageDiv.style.color = '';
+
+                                    if (response.status === 404) {
+                                        alert('Обсуждение не найдено');
+                                        return;
+                                    }
+                                    if (!response.ok) throw new Error('Ошибка при удалении');
+                                    return response.json();
+                                })
+                                .then(() => {
+                                    loadDiscussions();
+                                })
+                                .catch(err => {
+                                    alert(err.message);
+                                });
+                        });
+
+                        buttonGroup.appendChild(deleteButton);
+                    }
+
+                    const goButton = document.createElement('button');
+                    goButton.className = 'discussion-button';
+                    goButton.textContent = 'Перейти';
+
+                    goButton.addEventListener('click', () => {
                         if (!currentUser) {
                             alert('Авторизуйтесь чтобы перейти в обсуждение');
                             return;
@@ -121,9 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         fetch(`${API_BASE_URL}/discussions/byTitle`, {
                             method: 'POST',
                             credentials: 'include',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
+                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ title: discussion.title })
                         })
                             .then(async response => {
@@ -131,9 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     alert('Обсуждение не существует');
                                     throw new Error('Обсуждение не найдено');
                                 }
-                                if (!response.ok) {
-                                    throw new Error('Ошибка запроса к серверу');
-                                }
+                                if (!response.ok) throw new Error('Ошибка запроса к серверу');
                                 return response.json();
                             })
                             .then(id => {
@@ -144,8 +170,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             });
                     });
 
+                    buttonGroup.appendChild(goButton);
                     card.appendChild(info);
-                    card.appendChild(button);
+                    card.appendChild(buttonGroup);
                     discussionListDiv.appendChild(card);
                 });
             })

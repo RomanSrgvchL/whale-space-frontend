@@ -18,6 +18,8 @@
     text-align: center;
     margin: 15px auto;
     user-select: none;
+    word-break: break-word;
+    white-space: normal;
 }
 
 #messages {
@@ -82,14 +84,23 @@
 .message strong {
     display: block;
     margin-bottom: 4px;
-    font-weight: 600;
-    color: #1a3f8f;
+    font-size: 15px;
+    border: 2px solid black;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: normal;
+    word-break: break-word;
+    max-width: fit-content;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    font-family: 'Orbitron', sans-serif;
+    background-color: #a4d9fa;
 }
 
 .message small {
     display: block;
     margin-top: 4px;
-    color: #555;
+    color: #777;
     font-size: 14px;
 }
 

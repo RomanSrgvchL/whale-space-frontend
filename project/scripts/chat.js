@@ -33,7 +33,6 @@ function addMessage(msg, currentUser) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-
 function renderChat(chat, currentUser) {
     chatTitleElem.textContent = `${currentUser.username} ↔ ${
         currentUser.id === chat.user1.id ? chat.user2.username : chat.user1.username
@@ -74,7 +73,9 @@ Promise.all([
                 const msgObj = JSON.parse(message.body);
                 if (msgObj.success) {
                     addMessage(msgObj.messageDto, currentUser);
-                    input.value = '';
+                    if (msgObj.messageDto.sender.id === currentUser.id) {
+                        input.value = '';
+                    }
                 }
             });
 

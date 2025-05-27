@@ -18,10 +18,14 @@ function initiateChatWithUser(inputUsername, currentUser) {
     })
         .then(userRes => {
             if (userRes.status === 404) {
-                resultMessage.textContent = `Пользователь "${inputUsername}" не существует`;
+                resultMessage.textContent = `Пользователь "${inputUsername}" не найден`;
                 resultMessage.style.color = 'red';
                 return;
             }
+
+            resultMessage.textContent = `Пользователь "${inputUsername}" найден!`;
+            resultMessage.style.color = 'green';
+
             return userRes.json().then(targetUser => {
                 const userId1 = currentUser.id;
                 const userId2 = targetUser.id;
@@ -82,6 +86,7 @@ fetch(`${API_BASE_URL}/people/createdAtDesc`, {
         const peopleContainer = document.getElementById('people');
         people.forEach(person => {
             const role = person.role.replace(/^ROLE_/, '');
+            const createdAt = new Date(person.createdAt).toLocaleString();
             const personDiv = document.createElement('div');
             personDiv.classList.add('person-card');
             personDiv.innerHTML = `
@@ -89,9 +94,9 @@ fetch(`${API_BASE_URL}/people/createdAtDesc`, {
                 <p class="username">${person.username}</p>
                 <p class="registered-label">
                     Дата регистрации:<br>
-                    <span class="date">${new Date(person.createdAt).toLocaleString()}</span>
+                    <span class="date">${createdAt}</span>
                 </p>
-                <p class="role">${role})}</p>
+                <p class="role">${role}</p>
             </div>
              `;
             peopleContainer.appendChild(personDiv);
@@ -138,8 +143,6 @@ fetch(`${API_BASE_URL}/people/createdAtDesc`, {
 
                             const userExists = people.some(person => person.username === input);
                             if (userExists) {
-                                resultMessage.textContent = `Пользователь "${input}" найден!`;
-                                resultMessage.style.color = 'green';
                                 initiateChatWithUser(input, data);
                             } else {
                                 resultMessage.textContent = `Пользователь "${input}" не найден`;
