@@ -1,5 +1,4 @@
 fetch(`${API_BASE_URL}/auth/logout`, {
-    method: 'POST',
     credentials: 'include'
 })
     .then(() => {

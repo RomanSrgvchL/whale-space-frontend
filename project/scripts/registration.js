@@ -20,11 +20,11 @@ document.getElementById('registration-form').addEventListener('submit', async fu
     try {
         const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(registrationData),
-            credentials: 'include'
+            body: JSON.stringify(registrationData)
         });
 
         const result = await response.json();

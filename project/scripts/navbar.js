@@ -20,7 +20,6 @@ function updateNavbar() {
 
 function checkAuth() {
     return fetch(`${API_BASE_URL}/auth/check`, {
-        method: 'GET',
         credentials: 'include'
     })
         .then(response => response.json());

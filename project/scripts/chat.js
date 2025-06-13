@@ -9,7 +9,7 @@ if (!chatId || !/^\d+$/.test(chatId) || Number(chatId) < 1) {
 
 const chatTitleElem = document.getElementById('chat-title');
 const messagesContainer = document.getElementById('messages');
-const form = document.getElementById('message-form');
+const form = document.getElementById('users-actions');
 const input = document.getElementById('message-input');
 const errorDiv = document.getElementById('error-msg');
 
@@ -24,9 +24,11 @@ function addMessage(msg, currentUser) {
 
     msgDiv.classList.add('message', isSelf ? 'self' : 'other');
 
+    const createdAt = new Date(msg.createdAt).toLocaleString();
+
     msgDiv.innerHTML = `
-        ${msg.content}<br>
-        <small>${new Date(msg.createdAt).toLocaleString()}</small>
+        ${msg.content}
+        <small>${createdAt}</small>
     `;
 
     messagesContainer.appendChild(msgDiv);
@@ -34,9 +36,19 @@ function addMessage(msg, currentUser) {
 }
 
 function renderChat(chat, currentUser) {
-    chatTitleElem.textContent = `${currentUser.username} ↔ ${
-        currentUser.id === chat.user1.id ? chat.user2.username : chat.user1.username
-    }`;
+    const otherUser = currentUser.id === chat.user1.id ? chat.user2 : chat.user1;
+
+    //document.getElementById('left-user').textContent = "🡆 " + currentUser.username;
+    //document.getElementById('right-user').textContent = otherUser.username + " 🡄";
+
+    document.getElementById('left-user').innerHTML = `
+        <span class="arrow">🡆</span><span class="username">${currentUser.username}</span>
+    `;
+    document.getElementById('right-user').innerHTML = `
+        <span class="username">${otherUser.username}</span> <span class="arrow">🡄</span>
+    `;
+
+
     messagesContainer.innerHTML = '';
 
     chat.messages.forEach(msg => {
@@ -46,9 +58,9 @@ function renderChat(chat, currentUser) {
     errorDiv.textContent = '';
 }
 
-// Получение текущего пользователя и чата через
+// Получение текущего пользователя и чата
 Promise.all([
-    fetch(`${API_BASE_URL}/people/yourself`, { credentials: 'include' }).then(res => {
+    fetch(`${API_BASE_URL}/people/me`, { credentials: 'include' }).then(res => {
         if (!res.ok) throw new Error('Не удалось получить текущего пользователя');
         return res.json();
     }),

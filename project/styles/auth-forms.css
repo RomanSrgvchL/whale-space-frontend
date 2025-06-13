@@ -3,12 +3,14 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    min-height: 84vh !important;
+    height: 100% !important;
 }
 
 form {
     background: #6465cf;
     padding: 30px 30px 40px;
-    border-radius: 14px;]
+    border-radius: 14px;
     min-width: 320px;
     max-width: 400px;
     width: 100%;
@@ -47,7 +49,6 @@ input::placeholder {
 
 input:focus {
     background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: none;
     color: #fff;
 }
 
@@ -62,7 +63,6 @@ button {
     cursor: pointer;
     font-weight: 700;
     letter-spacing: 0.05em;
-    box-shadow: 0 6px 14px rgba(59, 68, 195, 0.6);
     transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 

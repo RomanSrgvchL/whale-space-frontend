@@ -1,7 +1,6 @@
 .container {
     margin: 0 auto;
     padding: 20px;
-    box-sizing: border-box;
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -118,7 +117,6 @@
     border-radius: 12px;
     padding: 16px;
     background-color: #ffffff;
-    box-shadow: 0 4px 6px rgba(63, 142, 252, 0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;

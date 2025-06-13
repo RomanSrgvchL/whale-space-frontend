@@ -1,12 +1,11 @@
 document.addEventListener("DOMContentLoaded", async () => {
     // Получение текущего пользователя
-    const userResponse = await fetch(`${API_BASE_URL}/people/yourself`, {
-        method: "GET",
+    const userResponse = await fetch(`${API_BASE_URL}/people/me`, {
         credentials: "include"
     });
 
     if (!userResponse.ok) {
-        window.location.href = "./home";
+        window.location.href = "./home.html";
         return;
     }
 
@@ -14,8 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentUserId = user.id;
 
     // Получение чатов
-    const response = await fetch(`${API_BASE_URL}/chats/createdAtDesc`, {
-        method: "GET",
+    const response = await fetch(`${API_BASE_URL}/chats?sortBy=createdAtDesc`, {
         credentials: "include"
     });
 
@@ -37,8 +35,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         chatItem.classList.add("chat-item");
 
         chatItem.innerHTML = `
-            <div class="chat-title">Собеседник: <strong>${otherUser.username}</strong></div>
-            <div class="chat-meta">Сообщений: ${messageCount} • Создано: ${createdAt}</div>
+            <div class="chat-header">
+                <div class="chat-title">Собеседник: <strong>${otherUser.username}</strong></div>
+                <div class="chat-meta">Сообщений: ${messageCount} • Создано: ${createdAt}</div>
+            </div>
         `;
 
         chatItem.addEventListener("click", () => {

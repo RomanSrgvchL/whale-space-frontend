@@ -9,7 +9,7 @@ if (!discussionId || !/^\d+$/.test(discussionId) || Number(discussionId) < 1) {
 
 const discussionTitleElem = document.getElementById('discussion-title');
 const messagesContainer = document.getElementById('messages');
-const form = document.getElementById('message-form');
+const form = document.getElementById('users-actions');
 const input = document.getElementById('message-input');
 const errorDiv = document.getElementById('error-msg');
 
@@ -24,10 +24,12 @@ function addReply(reply, currentUser) {
 
     msgDiv.classList.add('message', isSelf ? 'self' : 'other');
 
+    const createdAt = new Date(reply.createdAt).toLocaleString();
+
     msgDiv.innerHTML = `
         <strong>${reply.sender.username}</strong>
         ${reply.content}
-        <small>${new Date(reply.createdAt).toLocaleString()}</small>
+        <small>${createdAt}</small>
     `;
 
     messagesContainer.appendChild(msgDiv);
@@ -48,7 +50,7 @@ function renderDiscussion(discussion, currentUser) {
 
 // Получение текущего пользователя и обсуждения
 Promise.all([
-    fetch(`${API_BASE_URL}/people/yourself`, { credentials: 'include' }).then(res => {
+    fetch(`${API_BASE_URL}/people/me`, { credentials: 'include' }).then(res => {
         if (!res.ok) throw new Error('Не удалось получить текущего пользователя');
         return res.json();
     }),

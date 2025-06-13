@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const discussionListDiv = document.getElementById('discussions-list');
     let currentUser = null;
 
-    fetch(`${API_BASE_URL}/people/yourself`, {
+    fetch(`${API_BASE_URL}/people/me`, {
         credentials: 'include'
     })
         .then(response => response.ok ? response.json() : null)
@@ -40,11 +40,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            fetch(`${API_BASE_URL}/discussions/create`, {
+            fetch(`${API_BASE_URL}/discussions`, {
                 method: 'POST',
                 credentials: 'include',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({title})
             })
                 .then(async response => {
                     if (!response.ok) {
@@ -52,7 +54,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         try {
                             const errorData = await response.json();
                             if (errorData?.message) errorMessage = errorData.message;
-                        } catch {}
+                        } catch {
+                        }
                         throw new Error(errorMessage);
                     }
                     return response.json();
@@ -73,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadDiscussions() {
         discussionListDiv.innerHTML = '';
 
-        fetch(`${API_BASE_URL}/discussions/createdAtDesc`, {
+        fetch(`${API_BASE_URL}/discussions?sortBy=createdAtDesc`, {
             credentials: 'include'
         })
             .then(response => {
@@ -92,9 +95,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     title.className = 'discussion-title';
                     title.textContent = discussion.title;
 
+                    const username = discussion.creator.username;
+                    const createdAt = new Date(discussion.createdAt).toLocaleString();
+
                     const meta = document.createElement('div');
                     meta.className = 'discussion-meta';
-                    meta.textContent = `Создал: ${discussion.creator.username} • ${new Date(discussion.createdAt).toLocaleString()}`;
+                    meta.textContent = `Создал: ${username} • ${createdAt}`;
+
 
                     info.appendChild(title);
                     info.appendChild(meta);
@@ -108,27 +115,29 @@ document.addEventListener('DOMContentLoaded', function () {
                         deleteButton.textContent = 'Удалить';
 
                         deleteButton.addEventListener('click', () => {
-                            fetch(`${API_BASE_URL}/discussions/delete`, {
-                                method: 'POST',
-                                credentials: 'include',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ title: discussion.title })
+                            fetch(`${API_BASE_URL}/discussions/${discussion.id}`, {
+                                method: 'DELETE',
+                                credentials: 'include'
                             })
                                 .then(async response => {
                                     messageDiv.textContent = '';
                                     messageDiv.style.color = '';
 
                                     if (response.status === 404) {
-                                        alert('Обсуждение не найдено');
-                                        return;
+                                        alert("Это обсуждение уже удалено другим администратором");
+                                        return null;
                                     }
-                                    if (!response.ok) throw new Error('Ошибка при удалении');
+
+                                    if (!response.ok) {
+                                        throw new Error('Ошибка при удалении');
+                                    }
+
                                     return response.json();
                                 })
-                                .then(() => {
-                                    loadDiscussions();
+                                .then(result => {
+                                    if (result !== null) {
+                                        loadDiscussions();
+                                    }
                                 })
                                 .catch(err => {
                                     alert(err.message);
@@ -148,22 +157,19 @@ document.addEventListener('DOMContentLoaded', function () {
                             return;
                         }
 
-                        fetch(`${API_BASE_URL}/discussions/byTitle`, {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ title: discussion.title })
+                        fetch(`${API_BASE_URL}/discussions/${discussion.id}`, {
+                            credentials: 'include'
                         })
                             .then(async response => {
                                 if (response.status === 404) {
-                                    alert('Обсуждение не существует');
+                                    alert('Это обсуждение не существует');
                                     throw new Error('Обсуждение не найдено');
                                 }
                                 if (!response.ok) throw new Error('Ошибка запроса к серверу');
                                 return response.json();
                             })
-                            .then(id => {
-                                window.location.href = `./discussion.html?id=${id}`;
+                            .then(discussionDto => {
+                                window.location.href = `./discussion.html?id=${discussionDto.id}`;
                             })
                             .catch(err => {
                                 console.error(err);

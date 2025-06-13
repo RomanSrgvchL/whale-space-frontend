@@ -1,5 +1,4 @@
 fetch(`${API_BASE_URL}/auth/check`, {
-    method: 'GET',
     credentials: 'include'
 })
     .then(response => {

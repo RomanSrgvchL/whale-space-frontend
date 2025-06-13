@@ -16,11 +16,16 @@
 <div id="navbar"></div>
 
 <div class="container">
-    <h2 id="chat-title"></h2>
+    <div id="chat-title">
+        <div class="chat-title-row">
+            <div class="chat-user left" id="left-user"></div>
+            <div class="chat-user right" id="right-user"></div>
+        </div>
+    </div>
     <div id="messages" class="messages"></div>
-    <form id="message-form">
+    <form id="users-actions">
         <div class="input-row">
-            <input id="message-input" type="text" placeholder="Введите сообщение"/>
+            <input id="message-input" placeholder="Введите сообщение"/>
             <button type="submit">Отправить</button>
         </div>
         <div id="error-msg" class="error-msg"></div>
