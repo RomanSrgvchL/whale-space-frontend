@@ -1,49 +1,49 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>Пользователи</title>
-        <script src="../scripts/config.js"></script>
-        <link rel="stylesheet" href="../styles/global.css"/>
-        <link rel="stylesheet" href="../styles/users.css"/>
-    </head>
-    <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Пользователи</title>
+    <script src="../scripts/config.js"></script>
+    <link rel="stylesheet" href="../styles/global.css"/>
+    <link rel="stylesheet" href="../styles/users.css"/>
+</head>
+<body>
 
-    <div id="navbar"></div>
+<div id="navbar"></div>
 
-    <div class="container">
-        <div class="main-layout">
-            <div id="people" class="people-list"></div>
-            <div id="users-actions" class="users-actions">
-                <h3>Написать пользователю:</h3>
-                <form id="start-dialog-form">
-                    <input id="username-input" name="username" placeholder="Имя пользователя"/>
-                    <button type="submit">Написать</button>
-                </form>
-                <div id="message"></div>
+<div class="container">
+    <div class="main-layout">
+        <div id="people" class="people-list"></div>
+        <div id="users-actions" class="users-actions">
+            <h3>Написать пользователю:</h3>
+            <form id="start-dialog-form">
+                <input id="username-input" name="username" placeholder="Имя пользователя"/>
+                <button type="submit">Написать</button>
+            </form>
+            <div id="message"></div>
 
-                <div id="sort-controls" class="sort-controls">
-                    <div class="sort-field">
-                        <span>Сортировать по:</span>
-                        <button data-sort="username">Имя пользователя</button>
-                        <button data-sort="createdAt">Дата регистрации</button>
-                    </div>
-                    <div class="sort-order">
-                        <span>Порядок:</span>
-                        <button data-order="asc">По возрастанию</button>
-                        <button data-order="desc">По убыванию</button>
-                    </div>
+            <div id="sort-controls" class="sort-controls">
+                <div class="sort-field">
+                    <span>Сортировать по:</span>
+                    <button data-sort="username">Имя пользователя</button>
+                    <button data-sort="createdAt">Дата регистрации</button>
                 </div>
-
-                <div id="pagination"></div>
+                <div class="sort-order">
+                    <span>Порядок:</span>
+                    <button data-order="asc">По возрастанию</button>
+                    <button data-order="desc">По убыванию</button>
+                </div>
             </div>
+
+            <div id="pagination"></div>
         </div>
     </div>
+</div>
 
-    <script src="../scripts/navbar.js"></script>
-    <script src="../scripts/users.js"></script>
-    <script src="../scripts/onload.js"></script>
+<script src="../scripts/navbar.js"></script>
+<script src="../scripts/users.js"></script>
+<script src="../scripts/onload.js"></script>
 
-    </body>
-    </html>
+</body>
+</html>

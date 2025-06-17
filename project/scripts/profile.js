@@ -26,6 +26,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const statusMessageElem = document.getElementById("message");
     const avatarImg = document.getElementById("avatar-img");
 
+    const selectedFileCheckmark = document.getElementById("selected-file-checkmark");
+
+    fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+            selectedFileCheckmark.classList.add("visible");
+        } else {
+            selectedFileCheckmark.classList.remove("visible");
+        }
+    });
+
     // Функция для отображения сообщения
     function setStatus(message, color) {
         statusMessageElem.style.color = color;
@@ -84,6 +94,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
+        if (file.size > 3 * 1024 * 1024) {
+            setStatus("Размер файла не должен превышать 3 МБ", "red");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("file", fileInput.files[0]);
 
@@ -99,6 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (response.ok) {
                 setStatus(data.message, "green");
                 fileInput.value = "";
+                selectedFileCheckmark.classList.remove("visible");
                 await refreshAvatar();
             } else {
                 setStatus(data.message, "red");

@@ -8,11 +8,10 @@
     height: 100% !important;
 }
 
-#scrollable-discussions {
+#discussions-container {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding-right: 8px;
+    gap: 12px;
 }
 
 #discussion-form-container {
@@ -29,7 +28,6 @@
     font-size: 18px;
     font-weight: 600;
     color: #334;
-    user-select: none;
 }
 
 #discussion-form-container form {
@@ -65,7 +63,6 @@
     display: flex;
     align-items: center;
     min-height: 38px;
-    gap: 12px;
     justify-content: flex-start;
     position: relative;
     flex-wrap: wrap;
@@ -109,7 +106,7 @@
 .discussions-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .discussion-card {
@@ -120,13 +117,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: nowrap;
 }
 
 .discussion-info {
     padding-right: 30px;
     flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .discussion-title {
@@ -134,14 +133,17 @@
     font-weight: 600;
     color: #1a3f8f;
     margin-bottom: 4px;
-    word-break: break-word;
-    white-space: normal;
-    overflow-wrap: anywhere;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .discussion-meta {
     font-size: 14px;
     color: #555;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .button-group {

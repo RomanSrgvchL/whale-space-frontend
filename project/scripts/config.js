@@ -1,4 +1,6 @@
 const IN_PRODUCTION = false;
+const HEARTBEAT_OUTGOING = 10_000
+const HEARTBEAT_INCOMING = 10_000
 
 const DEV_CONFIG = {
     protocol: 'http',

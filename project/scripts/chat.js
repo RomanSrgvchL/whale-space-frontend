@@ -7,7 +7,6 @@ if (!chatId || !/^\d+$/.test(chatId) || Number(chatId) < 1) {
     throw new Error('Некорректный id чата');
 }
 
-const chatTitleElem = document.getElementById('chat-title');
 const messagesContainer = document.getElementById('messages');
 const form = document.getElementById('users-actions');
 const input = document.getElementById('message-input');
@@ -18,18 +17,24 @@ let currentUser = null;
 const socket = new SockJS(`${API_BASE_URL}/ws`);
 const stompClient = Stomp.over(socket);
 
+stompClient.heartbeat.outgoing = HEARTBEAT_OUTGOING;
+stompClient.heartbeat.incoming = HEARTBEAT_INCOMING;
+
 function addMessage(msg, currentUser) {
-    const msgDiv = document.createElement('div');
-    const isSelf = msg.sender.id === currentUser.id;
+    const msgDiv  = document.createElement('div');
+    const isSelf  = msg.sender.id === currentUser.id;
+    const createdAt = new Date(msg.createdAt).toLocaleString();
 
     msgDiv.classList.add('message', isSelf ? 'self' : 'other');
 
-    const createdAt = new Date(msg.createdAt).toLocaleString();
+    const msgText = document.createElement('span');
+    msgText.textContent = msg.content;
 
-    msgDiv.innerHTML = `
-        ${msg.content}
-        <small>${createdAt}</small>
-    `;
+    const timeEl  = document.createElement('small');
+    timeEl.textContent = createdAt;
+
+    msgDiv.appendChild(msgText);
+    msgDiv.appendChild(timeEl);
 
     messagesContainer.appendChild(msgDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -37,9 +42,6 @@ function addMessage(msg, currentUser) {
 
 function renderChat(chat, currentUser) {
     const otherUser = currentUser.id === chat.user1.id ? chat.user2 : chat.user1;
-
-    //document.getElementById('left-user').textContent = "🡆 " + currentUser.username;
-    //document.getElementById('right-user').textContent = otherUser.username + " 🡄";
 
     document.getElementById('left-user').innerHTML = `
         <span class="arrow">🡆</span><span class="username">${currentUser.username}</span>
@@ -79,7 +81,7 @@ Promise.all([
         currentUser = user;
         renderChat(chat, currentUser);
 
-        stompClient.connect({}, frame => {
+        stompClient.connect({}, () => {
             // Подписка на новые сообщения чата
             stompClient.subscribe(`/chat/newMessage/${chatId}`, message => {
                 const msgObj = JSON.parse(message.body);

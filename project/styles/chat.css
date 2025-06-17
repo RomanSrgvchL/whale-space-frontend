@@ -21,7 +21,6 @@
     align-items: center;
     font-size: 20px;
     font-weight: 700;
-    user-select: none;
     padding: 0 3px;
 }
 
@@ -36,11 +35,12 @@
 .chat-user .username {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: pre;
 }
 
 .chat-user .arrow {
     flex-shrink: 0;
+    user-select: none;
 }
 
 .chat-user.left {
@@ -97,6 +97,7 @@
     line-height: 1.4;
     word-wrap: break-word;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    white-space: break-spaces;
 }
 
 .message.self {

@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadDiscussions() {
         discussionListDiv.innerHTML = '';
 
-        fetch(`${API_BASE_URL}/discussions?sortBy=createdAtDesc`, {
+        fetch(`${API_BASE_URL}/discussions`, {
             credentials: 'include'
         })
             .then(response => {

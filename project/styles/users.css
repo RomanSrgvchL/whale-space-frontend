@@ -23,30 +23,39 @@
 
 @media (max-width: 1200px) {
     .people-list {
-        grid-template-columns: repeat(2, 1fr);
-        width: 100%;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        flex: 0 0 50%;
+    }
+    .users-actions {
+        flex: 0 0 50%;
     }
 }
 
 @media (max-width: 900px) {
     .people-list {
-        grid-template-columns: 1fr;
-        width: 100%;
+        grid-template-columns: minmax(0, 1fr);
+        flex: 0 0 40%;
+    }
+    .users-actions {
+        flex: 0 0 60%;
     }
 }
 
+.users-actions::-webkit-scrollbar,
 .people-list::-webkit-scrollbar {
     width: 8px;
     border-radius: 12px;
     background-clip: padding-box;
 }
 
+.users-actions::-webkit-scrollbar-track,
 .people-list::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 12px;
     margin: 4px 0;
 }
 
+.users-actions::-webkit-scrollbar-thumb,
 .people-list::-webkit-scrollbar-thumb {
     background-color: #aaa;
     border-radius: 12px;
@@ -61,6 +70,7 @@
     background-color: #ffffff;
     text-align: center;
     font-size: 15px;
+    min-width: 0;
 }
 
 .person-info {
@@ -82,6 +92,7 @@
     background-color: #f7faff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .users-actions h3 {
@@ -90,7 +101,6 @@
     font-size: 18px;
     font-weight: 600;
     color: #334;
-    user-select: none;
     text-align: center;
 }
 
@@ -105,7 +115,6 @@
     border-radius: 12px;
     box-sizing: border-box;
     justify-content: center;
-    margin-bottom: auto;
 }
 
 #start-dialog-form input {
@@ -183,6 +192,11 @@
     color: #1a3f8f;
     font-weight: 600;
     font-size: 18px;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .role {
@@ -244,7 +258,6 @@
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto;
     gap: 6px 12px;
-    user-select: none;
     font-weight: 600;
     color: #334;
     max-width: 100%;
@@ -258,37 +271,48 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
 }
 
 .sort-field button,
 .sort-order button {
-    margin-top: 15px;
-    width: 100%;
     max-width: 180px;
-    background-color: #4b6cb7;
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    border-radius: 12px;
+    width: 100%;
     height: 44px;
+    font-size: 16px;
+    font-weight: 700;
+    border: 3px solid #3f8efc;
+    border-radius: 16px;
+    background-color: #ffffff;
+    color: #3f8efc;
+    cursor: pointer;
     white-space: normal;
     overflow-wrap: anywhere;
     word-wrap: break-word;
 }
 
-.sort-field button:hover,
-.sort-order button:hover {
-    background-color: #3a54a0;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+.sort-field button:hover:not(.active),
+.sort-order button:hover:not(.active) {
+    background-color: #3f8efc;
+    color: white;
+    box-shadow: 0 4px 14px rgba(63, 142, 252, 0.5);
+}
+
+.sort-field button:disabled,
+.sort-order button:disabled {
+    opacity: 0.5;
+    cursor: default;
+    box-shadow: none;
+    transform: none;
 }
 
 .sort-field button.active,
 .sort-order button.active {
-    background-color: #b4bdc3;
+    background-color: #3f8efc;
+    color: white;
+    box-shadow: 0 4px 14px rgba(63, 142, 252, 0.6);
     cursor: default;
-    box-shadow: none;
+    pointer-events: none;
 }
 
 .sort-field > span,
@@ -296,6 +320,8 @@
     text-align: center;
     display: block;
     width: 100%;
+    color: #334;
+    font-size: 17px;
 }
 
 #pagination {
@@ -317,14 +343,12 @@
     background-color: #ffffff;
     color: #3f8efc;
     cursor: pointer;
-    transition: background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
 }
 
 #pagination button:hover:not(:disabled) {
     background-color: #3f8efc;
     color: white;
     box-shadow: 0 4px 14px rgba(63, 142, 252, 0.5);
-    transform: scale(1.05);
 }
 
 #pagination button:disabled {
@@ -339,6 +363,5 @@
     color: white;
     box-shadow: 0 4px 14px rgba(63, 142, 252, 0.6);
     cursor: default;
-    transform: scale(1.1);
     pointer-events: none;
 }

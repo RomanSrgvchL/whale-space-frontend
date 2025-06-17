@@ -17,9 +17,8 @@
     -webkit-text-fill-color: transparent;
     text-align: center;
     margin: 15px auto;
-    user-select: none;
     word-break: break-word;
-    white-space: normal;
+    white-space: break-spaces;
 }
 
 #messages {
@@ -67,6 +66,7 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     background-color: #e3e8ff;
     align-self: flex-start;
+    white-space: break-spaces;
 }
 
 .message.self {

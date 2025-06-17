@@ -18,6 +18,9 @@ let currentUser = null;
 const socket = new SockJS(`${API_BASE_URL}/ws`);
 const stompClient = Stomp.over(socket);
 
+stompClient.heartbeat.outgoing = HEARTBEAT_OUTGOING;
+stompClient.heartbeat.incoming = HEARTBEAT_INCOMING;
+
 function addReply(reply, currentUser) {
     const msgDiv = document.createElement('div');
     const isSelf = reply.sender.id === currentUser.id;
@@ -26,11 +29,17 @@ function addReply(reply, currentUser) {
 
     const createdAt = new Date(reply.createdAt).toLocaleString();
 
-    msgDiv.innerHTML = `
-        <strong>${reply.sender.username}</strong>
-        ${reply.content}
-        <small>${createdAt}</small>
-    `;
+    const senderStrong = document.createElement('strong');
+    senderStrong.textContent = reply.sender.username;
+    msgDiv.appendChild(senderStrong);
+
+    const contentSpan = document.createElement('span');
+    contentSpan.textContent = reply.content;
+    msgDiv.appendChild(contentSpan);
+
+    const timeSmall = document.createElement('small');
+    timeSmall.textContent = createdAt;
+    msgDiv.appendChild(timeSmall);
 
     messagesContainer.appendChild(msgDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;

@@ -4,7 +4,7 @@ function redirectWithDelay(url, delay = 750) {
     }, delay);
 }
 
-function initiateChatWithUser(inputUsername, currentUser) {
+function initiateChatWithUser(inputUsername) {
     const resultMessage = document.getElementById('message');
 
     // Получаем id второго пользователя по имени
@@ -21,12 +21,11 @@ function initiateChatWithUser(inputUsername, currentUser) {
             resultMessage.textContent = `Пользователь "${inputUsername}" найден!`;
             resultMessage.style.color = 'green';
 
-            return userRes.json().then(targetUser => {
-                const user1Id = currentUser.id;
-                const user2Id = targetUser.id;
+            return userRes.json().then(partner => {
+                const partnerId = partner.id;
 
                 // Проверяем, существует ли чат
-                fetch(`${API_BASE_URL}/chats/between?user1Id=${user1Id}&user2Id=${user2Id}`, {
+                fetch(`${API_BASE_URL}/chats/with/${partnerId}`, {
                     credentials: 'include'
                 })
                     .then(chatRes => {
@@ -39,8 +38,7 @@ function initiateChatWithUser(inputUsername, currentUser) {
                                     'Content-Type': 'application/json'
                                 },
                                 body: JSON.stringify({
-                                    user1Id: user1Id,
-                                    user2Id: user2Id
+                                    partnerId: partnerId
                                 })
                             })
                                 .then(createRes => {
@@ -74,7 +72,6 @@ function initiateChatWithUser(inputUsername, currentUser) {
             });
         });
 }
-
 
 /* ==== ПАГИНАЦИЯ ==== */
 const PAGE_SIZE = 6;
@@ -119,11 +116,10 @@ function updateSortButtons() {
     const sortButtons = document.querySelectorAll('#sort-controls button');
     sortButtons.forEach(button => {
         button.classList.remove('active');
-        if (button.dataset.sort === sortField) {
+        button.disabled = false;
+        if (button.dataset.sort === sortField || button.dataset.order === sortOrder) {
             button.classList.add('active');
-        }
-        if (button.dataset.order === sortOrder) {
-            button.classList.add('active');
+            button.disabled = true;
         }
     });
 }
@@ -208,21 +204,34 @@ function renderPeople(people) {
 }
 
 function renderPagination() {
-    const paginationContainer = document.getElementById('pagination');
-    paginationContainer.innerHTML = '';
+    const pag = document.getElementById('pagination');
+    pag.innerHTML = '';
 
-    for (let i = 0; i < totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = (i + 1).toString();
-        btn.disabled = (i === currentPage);
+    const makeBtn = (page, label, disabled = false, active = false) => {
+        const b = document.createElement('button');
+        b.textContent = label ?? page + 1;
 
-        btn.addEventListener('click', () => {
-            if (i !== currentPage) {
-                loadPage(i);
-            }
-        });
+        if (disabled) b.disabled = true;
+        if (active) {
+            b.classList.add('active');
+            b.disabled = true;
+        }
 
-        paginationContainer.appendChild(btn);
+        if (!disabled && !active) b.addEventListener('click', () => loadPage(page));
+        pag.appendChild(b);
+    };
+
+    if (totalPages <= 5) {
+        for (let i = 0; i < totalPages; i++)
+            makeBtn(i, null, false, i === currentPage);
+    } else {
+        const pages = new Set([0, totalPages - 1, currentPage]);
+        if (currentPage > 0) pages.add(currentPage - 1);
+        if (currentPage < totalPages - 1) pages.add(currentPage + 1);
+
+        [...pages].sort((a, b) => a - b).forEach(p =>
+            makeBtn(p, null, false, p === currentPage)
+        );
     }
 }
 
@@ -234,12 +243,6 @@ function attachStartDialogHandler() {
         const input = document.getElementById('username-input').value.trim();
         const resultMessage = document.getElementById('message');
 
-        if (!input) {
-            resultMessage.textContent = 'Введите имя пользователя';
-            resultMessage.style.color = 'red';
-            return;
-        }
-
         // Проверка авторизации
         fetch(`${API_BASE_URL}/auth/check`, {
             credentials: 'include'
@@ -247,6 +250,12 @@ function attachStartDialogHandler() {
             .then(authResponse => {
                 if (!authResponse.ok) {
                     resultMessage.textContent = 'Авторизуйтесь чтобы написать пользователю';
+                    resultMessage.style.color = 'red';
+                    return;
+                }
+
+                if (!input) {
+                    resultMessage.textContent = 'Введите имя пользователя';
                     resultMessage.style.color = 'red';
                     return;
                 }
@@ -273,16 +282,16 @@ function attachStartDialogHandler() {
 
                         const forbiddenCharsPattern = /^(?!.*[;\\\/?&#]).*$/;
                         if (!forbiddenCharsPattern.test(input)) {
-                            resultMessage.textContent = 'Имя пользователя содержит запрещённые символы: [;\\/?&#]';
+                            resultMessage.textContent = 'Имя пользователя не может содержать символы ; \\ / ? & #';
                             resultMessage.style.color = 'red';
                             return;
                         }
 
-                        initiateChatWithUser(input, data);
+                        initiateChatWithUser(input);
                     })
                     .catch(error => {
                         console.error('Ошибка при получении данных о текущем пользователе:', error);
-                        resultMessage.textContent = 'Ошибка при получении информации о текущем пользователе.';
+                        resultMessage.textContent = 'Ошибка при получении информации о текущем пользователе';
                         resultMessage.style.color = 'red';
                     });
             })
