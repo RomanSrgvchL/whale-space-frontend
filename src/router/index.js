@@ -22,7 +22,8 @@ const routes = [
     {path: '/registration', component: Registration, meta: {title: 'Зарегистрироваться', guest: true}},
     {path: '/logout', component: Logout, meta: {title: 'Выйти', auth: true}},
     {path: '/discussion/:id', component: Discussion, meta: {title: 'Обсуждение', auth: true}},
-    {path: '/chat/:id', component: Chat, meta: {title: 'Чат', auth: true}}
+    {path: '/chat/:id', component: Chat, meta: {title: 'Чат', auth: true}},
+    {path: '/:pathMatch(.*)*', redirect: '/home'}
 ]
 
 const router = createRouter({
