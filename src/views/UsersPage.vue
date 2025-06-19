@@ -10,9 +10,14 @@ const sort = reactive({field: 'createdAt', order: 'desc'})
 const dialogUsername = ref('')
 const message = reactive({text: '', color: ''})
 
+const PRELOAD_AVATAR = '/avatars/preload.jpg'
+const DEFAULT_AVATAR = '/avatars/default.jpg'
+
+const avatarUrls = reactive({})
+
 const formattedDate = timestamp => new Date(timestamp).toLocaleString()
 const flash = (text, color = 'red') => {
-  message.text = text;
+  message.text = text
   message.color = color
 }
 
@@ -20,53 +25,53 @@ function redirectWithDelay(url, delay = 750) {
   setTimeout(() => router.push(url), delay)
 }
 
-function loadAvatar(person, image) {
-  if (!image) return;
+async function fetchPeople(index = 0) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/people?page=${index}&size=${page.size}&sort=${sort.field}&order=${sort.order}`, {
+      credentials: 'include'
+    })
 
-  if (!person.avatarFileName) {
-    image.src = '/avatars/default.jpg';
-    return;
+    if (!res.ok) throw new Error()
+
+    const data = await res.json()
+    people.value = data.content
+    page.total = data.totalPages
+    page.current = index
+    message.text = ''
+
+    for (const person of people.value) {
+      avatarUrls[person.id] = PRELOAD_AVATAR
+
+      if (!person.avatarFileName) {
+        avatarUrls[person.id] = DEFAULT_AVATAR
+        continue
+      }
+
+      try {
+        const resAvatar = await fetch(`${API_BASE_URL}/people/avatar/${encodeURIComponent(person.avatarFileName)}`, {
+          credentials: 'include'
+        })
+        const dataAvatar = await resAvatar.json()
+        avatarUrls[person.id] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
+      } catch {
+        avatarUrls[person.id] = DEFAULT_AVATAR
+      }
+    }
+  } catch {
+    flash('Ошибка загрузки пользователей')
   }
-
-  fetch(`${API_BASE_URL}/people/avatar/${encodeURIComponent(person.avatarFileName)}`,
-      {credentials: 'include'})
-      .then(res => res.json())
-      .then(data => {
-        image.src = data.success ? data.avatarUrl : '/avatars/default.jpg';
-      })
-      .catch(() => {
-        image.src = '/avatars/default.jpg';
-      });
-}
-
-function fetchPeople(index = 0) {
-  fetch(`${API_BASE_URL}/people?page=${index}&size=${page.size}&sort=${sort.field}&order=${sort.order}`,
-      {credentials: 'include'})
-      .then(res => {
-        if (!res.ok) throw new Error();
-        return res.json()
-      })
-      .then(data => {
-        people.value = data.content
-        page.total = data.totalPages
-        page.current = index
-        message.text = ''
-      })
-      .catch(() => {
-        flash('Ошибка загрузки пользователей')
-      })
 }
 
 function setSortField(field) {
   if (sort.field !== field) {
-    sort.field = field;
+    sort.field = field
     fetchPeople(0)
   }
 }
 
 function setSortOrder(order) {
   if (sort.order !== order) {
-    sort.order = order;
+    sort.order = order
     fetchPeople(0)
   }
 }
@@ -146,13 +151,13 @@ async function submitDialog(e) {
   const name = dialogUsername.value.trim()
 
   try {
-    const authCheckResponse = await fetch(`${API_BASE_URL}/auth/check`, { credentials: 'include' })
+    const authCheckResponse = await fetch(`${API_BASE_URL}/auth/check`, {credentials: 'include'})
     if (!authCheckResponse.ok) {
       flash('Авторизуйтесь чтобы написать пользователю')
       return
     }
 
-    const me = await fetch(`${API_BASE_URL}/people/me`, { credentials: 'include' }).then(res => res.json())
+    const me = await fetch(`${API_BASE_URL}/people/me`, {credentials: 'include'}).then(res => res.json())
 
     const validationError = validateUsername(name, me.username)
     if (validationError) {
@@ -186,8 +191,7 @@ onMounted(() => {
             <div class="avatar-wrapper">
               <img
                   class="avatar-img"
-                  src="/avatars/preload.jpg"
-                  :ref="elem => loadAvatar(person, elem)"
+                  :src="avatarUrls[person.id] || PRELOAD_AVATAR"
                   alt=""
               />
             </div>

@@ -10,13 +10,16 @@ const createdAt = ref('')
 const role = ref('')
 const username = ref('')
 
-const avatarImg = ref('/public/avatars/preload.jpg')
-
 const fileInput = ref(null)
 const selectedFileCheckmarkVisible = ref(false)
 const message = reactive({text: '', color: ''})
 
 const formRef = ref(null)
+
+const PRELOAD_AVATAR = '/avatars/preload.jpg'
+const DEFAULT_AVATAR = '/avatars/default.jpg'
+
+const avatarUrls = reactive({avatar: PRELOAD_AVATAR})
 
 const refreshAvatar = async () => {
   try {
@@ -33,20 +36,16 @@ const refreshAvatar = async () => {
         )
         const avatarData = await avatarResponse.json()
 
-        if (avatarData.success) {
-          avatarImg.value = avatarData.avatarUrl
-        } else {
-          avatarImg.value = '/avatars/default.jpg'
-        }
+        avatarUrls.avatar = avatarData.success ? avatarData.avatarUrl : DEFAULT_AVATAR
       } catch {
-        avatarImg.value = '/avatars/default.jpg'
+        avatarUrls.avatar = DEFAULT_AVATAR
       }
     } else {
-      avatarImg.value = '/avatars/default.jpg'
+      avatarUrls.avatar = DEFAULT_AVATAR
     }
   } catch (err) {
     console.error('Ошибка при получении данных пользователя:', err)
-    avatarImg.value = '/avatars/default.jpg'
+    avatarUrls.avatar = DEFAULT_AVATAR
   }
 }
 
@@ -151,10 +150,9 @@ onMounted(async () => {
         <div class="person-info">
           <div class="avatar-wrapper">
             <img
-                :src="avatarImg"
-                alt=""
                 class="avatar-img"
-                id="avatar-img"
+                :src="avatarUrls.avatar"
+                alt=""
             />
           </div>
           <p class="username" id="username">{{ username }}</p>
