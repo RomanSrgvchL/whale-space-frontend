@@ -13,7 +13,7 @@ const DEFAULT_AVATAR = '/avatars/default.jpg'
 const avatarUrls = reactive({})
 
 const loadChats = async () => {
-  const userResponse = await fetch(`${API_BASE_URL}/people/me`, {
+  const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
     credentials: 'include'
   })
 
@@ -46,7 +46,7 @@ const loadChats = async () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/people/avatar/${encodeURIComponent(otherUser.avatarFileName)}`, {
+      const res = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(otherUser.avatarFileName)}`, {
         credentials: 'include'
       })
       const data = await res.json()

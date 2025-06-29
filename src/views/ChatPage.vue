@@ -67,7 +67,7 @@ function startStomp() {
 async function fetchData() {
   try {
     const [userRes, chatRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/people/me`, {credentials: 'include'}),
+      fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'}),
       fetch(`${API_BASE_URL}/chats/${chatId}`, {credentials: 'include'}),
     ])
 

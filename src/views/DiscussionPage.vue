@@ -48,7 +48,7 @@ function addReply(reply, user) {
 async function fetchInitialData() {
   try {
     const [userRes, discussionRes] = await Promise.all([
-      fetch(`${API_BASE_URL}/people/me`, {credentials: 'include'}),
+      fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'}),
       fetch(`${API_BASE_URL}/discussions/${discussionId}`, {credentials: 'include'})
     ])
 

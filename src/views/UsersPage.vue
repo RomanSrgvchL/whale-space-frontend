@@ -27,7 +27,7 @@ function redirectWithDelay(url, delay = 750) {
 
 async function fetchPeople(index = 0) {
   try {
-    const res = await fetch(`${API_BASE_URL}/people?page=${index}&size=${page.size}&sort=${sort.field}&order=${sort.order}`, {
+    const res = await fetch(`${API_BASE_URL}/users?page=${index}&size=${page.size}&sort=${sort.field}&order=${sort.order}`, {
       credentials: 'include'
     })
 
@@ -48,7 +48,7 @@ async function fetchPeople(index = 0) {
       }
 
       try {
-        const resAvatar = await fetch(`${API_BASE_URL}/people/avatar/${encodeURIComponent(person.avatarFileName)}`, {
+        const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(person.avatarFileName)}`, {
           credentials: 'include'
         })
         const dataAvatar = await resAvatar.json()
@@ -91,7 +91,7 @@ const pagination = computed(() => {
 
 async function initiateChatWithUser(username) {
   try {
-    const userResponse = await fetch(`${API_BASE_URL}/people/username/${encodeURIComponent(username)}`, {
+    const userResponse = await fetch(`${API_BASE_URL}/users/username/${encodeURIComponent(username)}`, {
       credentials: 'include'
     })
 
@@ -157,7 +157,7 @@ async function submitDialog(e) {
       return
     }
 
-    const me = await fetch(`${API_BASE_URL}/people/me`, {credentials: 'include'}).then(res => res.json())
+    const me = await fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'}).then(res => res.json())
 
     const validationError = validateUsername(name, me.username)
     if (validationError) {

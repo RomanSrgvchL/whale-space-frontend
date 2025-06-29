@@ -17,7 +17,7 @@ const flash = (text, color = 'red') => {
 }
 
 const loadUser = async () => {
-  const r = await fetch(`${API_BASE_URL}/people/me`, {credentials: 'include'})
+  const r = await fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'})
   currentUser.value = r.ok ? await r.json() : null
 }
 

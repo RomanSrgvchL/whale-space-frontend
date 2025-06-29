@@ -23,7 +23,7 @@ const avatarUrls = reactive({avatar: PRELOAD_AVATAR})
 
 const refreshAvatar = async () => {
   try {
-    const refreshResponse = await fetch(`${API_BASE_URL}/people/me`, {
+    const refreshResponse = await fetch(`${API_BASE_URL}/users/me`, {
       credentials: 'include'
     })
     const updatedPerson = await refreshResponse.json()
@@ -31,7 +31,7 @@ const refreshAvatar = async () => {
     if (updatedPerson.avatarFileName) {
       try {
         const avatarResponse = await fetch(
-            `${API_BASE_URL}/people/avatar/${encodeURIComponent(updatedPerson.avatarFileName)}`,
+            `${API_BASE_URL}/users/avatar/${encodeURIComponent(updatedPerson.avatarFileName)}`,
             {credentials: 'include'}
         )
         const avatarData = await avatarResponse.json()
@@ -83,7 +83,7 @@ const submitForm = async (e) => {
   formData.append('file', file)
 
   try {
-    const response = await fetch(`${API_BASE_URL}/people/avatar`, {
+    const response = await fetch(`${API_BASE_URL}/users/avatar`, {
       method: 'POST',
       credentials: 'include',
       body: formData
@@ -107,7 +107,7 @@ const deleteAvatar = async () => {
   flash('', '')
 
   try {
-    const response = await fetch(`${API_BASE_URL}/people/avatar`, {
+    const response = await fetch(`${API_BASE_URL}/users/avatar`, {
       method: 'DELETE',
       credentials: 'include'
     })
@@ -125,7 +125,7 @@ const deleteAvatar = async () => {
 }
 
 onMounted(async () => {
-  const response = await fetch(`${API_BASE_URL}/people/me`, {
+  const response = await fetch(`${API_BASE_URL}/users/me`, {
     credentials: 'include'
   })
 
