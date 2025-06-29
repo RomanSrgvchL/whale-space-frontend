@@ -5,7 +5,7 @@ import {API_BASE_URL} from '@/assets/scripts/config.js'
 
 const router = useRouter()
 
-const person = ref(null)
+const user = ref(null)
 const createdAt = ref('')
 const role = ref('')
 const username = ref('')
@@ -26,12 +26,12 @@ const refreshAvatar = async () => {
     const refreshResponse = await fetch(`${API_BASE_URL}/users/me`, {
       credentials: 'include'
     })
-    const updatedPerson = await refreshResponse.json()
+    const updatedUser = await refreshResponse.json()
 
-    if (updatedPerson.avatarFileName) {
+    if (updatedUser.avatarFileName) {
       try {
         const avatarResponse = await fetch(
-            `${API_BASE_URL}/users/avatar/${encodeURIComponent(updatedPerson.avatarFileName)}`,
+            `${API_BASE_URL}/users/avatar/${encodeURIComponent(updatedUser.avatarFileName)}`,
             {credentials: 'include'}
         )
         const avatarData = await avatarResponse.json()
@@ -134,10 +134,10 @@ onMounted(async () => {
     return
   }
 
-  person.value = await response.json()
-  username.value = person.value.username
-  createdAt.value = new Date(person.value.createdAt).toLocaleString()
-  role.value = person.value.role.replace(/^ROLE_/, '')
+  user.value = await response.json()
+  username.value = user.value.username
+  createdAt.value = new Date(user.value.createdAt).toLocaleString()
+  role.value = user.value.role.replace(/^ROLE_/, '')
 
   await refreshAvatar()
 })
@@ -146,8 +146,8 @@ onMounted(async () => {
 <template>
   <div class="container">
     <div class="profile">
-      <div class="person-card">
-        <div class="person-info">
+      <div class="user-card">
+        <div class="user-info">
           <div class="avatar-wrapper">
             <img
                 class="avatar-img"

@@ -4,7 +4,7 @@ import {useRouter} from 'vue-router'
 import {API_BASE_URL} from '@/assets/scripts/config.js'
 
 const router = useRouter()
-const people = ref([])
+const users = ref([])
 const page = reactive({size: 6, current: 0, total: 0})
 const sort = reactive({field: 'createdAt', order: 'desc'})
 const dialogUsername = ref('')
@@ -25,7 +25,7 @@ function redirectWithDelay(url, delay = 750) {
   setTimeout(() => router.push(url), delay)
 }
 
-async function fetchPeople(index = 0) {
+async function fetchUsers(index = 0) {
   try {
     const res = await fetch(`${API_BASE_URL}/users?page=${index}&size=${page.size}&sort=${sort.field}&order=${sort.order}`, {
       credentials: 'include'
@@ -34,27 +34,27 @@ async function fetchPeople(index = 0) {
     if (!res.ok) throw new Error()
 
     const data = await res.json()
-    people.value = data.content
+    users.value = data.content
     page.total = data.totalPages
     page.current = index
     message.text = ''
 
-    for (const person of people.value) {
-      avatarUrls[person.id] = PRELOAD_AVATAR
+    for (const user of users.value) {
+      avatarUrls[user.id] = PRELOAD_AVATAR
 
-      if (!person.avatarFileName) {
-        avatarUrls[person.id] = DEFAULT_AVATAR
+      if (!user.avatarFileName) {
+        avatarUrls[user.id] = DEFAULT_AVATAR
         continue
       }
 
       try {
-        const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(person.avatarFileName)}`, {
+        const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(user.avatarFileName)}`, {
           credentials: 'include'
         })
         const dataAvatar = await resAvatar.json()
-        avatarUrls[person.id] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
+        avatarUrls[user.id] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
       } catch {
-        avatarUrls[person.id] = DEFAULT_AVATAR
+        avatarUrls[user.id] = DEFAULT_AVATAR
       }
     }
   } catch {
@@ -65,14 +65,14 @@ async function fetchPeople(index = 0) {
 function setSortField(field) {
   if (sort.field !== field) {
     sort.field = field
-    fetchPeople(0)
+    fetchUsers(0)
   }
 }
 
 function setSortOrder(order) {
   if (sort.order !== order) {
     sort.order = order
-    fetchPeople(0)
+    fetchUsers(0)
   }
 }
 
@@ -174,33 +174,33 @@ async function submitDialog(e) {
 }
 
 onMounted(() => {
-  fetchPeople(0)
+  fetchUsers(0)
 })
 </script>
 
 <template>
   <div class="container">
     <div class="main-layout">
-      <div class="people-list">
+      <div class="users-list">
         <div
-            v-for="person in people"
-            :key="person.id"
-            class="person-card"
+            v-for="user in users"
+            :key="user.id"
+            class="user-card"
         >
-          <div class="person-info">
+          <div class="user-info">
             <div class="avatar-wrapper">
               <img
                   class="avatar-img"
-                  :src="avatarUrls[person.id] || PRELOAD_AVATAR"
+                  :src="avatarUrls[user.id] || PRELOAD_AVATAR"
                   alt=""
               />
             </div>
-            <p class="username">{{ person.username }}</p>
+            <p class="username">{{ user.username }}</p>
             <p class="registered-label">
               Дата регистрации:<br/>
-              <span class="date">{{ formattedDate(person.createdAt) }}</span>
+              <span class="date">{{ formattedDate(user.createdAt) }}</span>
             </p>
-            <p class="role">{{ person.role.replace(/^ROLE_/, '') }}</p>
+            <p class="role">{{ user.role.replace(/^ROLE_/, '') }}</p>
           </div>
         </div>
       </div>
@@ -252,13 +252,13 @@ onMounted(() => {
 
         <div id="pagination">
           <button
-              v-for="person in pagination"
-              :key="person"
-              :class="{ active: person === page.current }"
-              :disabled="person === page.current"
-              @click="fetchPeople(person)"
+              v-for="user in pagination"
+              :key="user"
+              :class="{ active: user === page.current }"
+              :disabled="user === page.current"
+              @click="fetchUsers(user)"
           >
-            {{ person + 1 }}
+            {{ user + 1 }}
           </button>
         </div>
       </div>

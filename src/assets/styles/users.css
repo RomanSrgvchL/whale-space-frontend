@@ -4,7 +4,7 @@
     height: 100%;
 }
 
-.people-list {
+.users-list {
     width: 60%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -22,7 +22,7 @@
 }
 
 @media (max-width: 1200px) {
-    .people-list {
+    .users-list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         flex: 0 0 50%;
     }
@@ -32,7 +32,7 @@
 }
 
 @media (max-width: 900px) {
-    .people-list {
+    .users-list {
         grid-template-columns: minmax(0, 1fr);
         flex: 0 0 40%;
     }
@@ -42,27 +42,27 @@
 }
 
 .users-actions::-webkit-scrollbar,
-.people-list::-webkit-scrollbar {
+.users-list::-webkit-scrollbar {
     width: 8px;
     border-radius: 12px;
 }
 
 .users-actions::-webkit-scrollbar-track,
-.people-list::-webkit-scrollbar-track {
+.users-list::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 12px;
     margin: 4px 0;
 }
 
 .users-actions::-webkit-scrollbar-thumb,
-.people-list::-webkit-scrollbar-thumb {
+.users-list::-webkit-scrollbar-thumb {
     background-color: #aaa;
     border-radius: 12px;
     border: 2px solid transparent;
     background-clip: content-box;
 }
 
-.person-card {
+.user-card {
     padding: 0 16px;
     border: 2px solid #3f8efc;
     border-radius: 10px;
@@ -72,7 +72,7 @@
     min-width: 0;
 }
 
-.person-info {
+.user-info {
     display: flex;
     flex-direction: column;
     align-items: center;
