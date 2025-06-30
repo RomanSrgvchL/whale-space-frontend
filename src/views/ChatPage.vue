@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, onMounted, onUnmounted, nextTick} from 'vue'
+import {ref, computed, onMounted, onUnmounted, nextTick, watch} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import SockJS from 'sockjs-client'
 import {Client} from '@stomp/stompjs'
@@ -15,6 +15,7 @@ const messages = ref([])
 const errorMessage = ref('')
 const messageInput = ref('')
 const messagesBox = ref(null)
+const isReconnecting = ref(false)
 
 const stompClient = new Client({
   webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
@@ -43,6 +44,8 @@ function addMessage(message) {
 
 function startStomp() {
   stompClient.onConnect = () => {
+    isReconnecting.value = false
+
     stompClient.subscribe(`/chat/newMessage/${chatId}`, message => {
       const messageObject = JSON.parse(message.body)
       if (messageObject.success) {
@@ -61,7 +64,13 @@ function startStomp() {
     })
   }
 
-  stompClient.activate()
+  stompClient.onWebSocketClose = () => {
+    isReconnecting.value = true
+  }
+
+  if (!stompClient.active) {
+    stompClient.activate()
+  }
 }
 
 async function fetchData() {
@@ -124,6 +133,13 @@ function onSubmit(e) {
   stompClient.publish({destination: '/app/sendMessage', body: JSON.stringify(messageToSend)})
 }
 
+watch(isReconnecting, async (newValue, oldValue) => {
+  if (newValue === false && oldValue === true) {
+    errorMessage.value = ''
+    await fetchData()
+  }
+})
+
 onMounted(() => {
   fetchData()
 })
@@ -166,10 +182,13 @@ onUnmounted(() => {
             v-model="messageInput"
             placeholder="Введите сообщение"
             autocomplete="off"
+            :disabled="isReconnecting"
         />
-        <button type="submit">Отправить</button>
+        <button type="submit" :disabled="isReconnecting">Отправить</button>
       </div>
-      <div id="error-message" class="error-message">{{ errorMessage }}</div>
+      <div id="error-message" class="error-message">
+        {{ isReconnecting ? 'Обновление соединения...' : errorMessage }}
+      </div>
     </form>
   </div>
 </template>

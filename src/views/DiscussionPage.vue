@@ -1,5 +1,5 @@
 <script setup>
-import {ref, onMounted, onUnmounted, nextTick} from 'vue'
+import {ref, onMounted, onUnmounted, nextTick, watch} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import SockJS from 'sockjs-client'
 import {Client} from '@stomp/stompjs'
@@ -15,6 +15,7 @@ const currentUser = ref(null)
 const errorMessage = ref('')
 const messageInput = ref('')
 const messagesContainer = ref(null)
+const isReconnecting = ref(false)
 
 const stompClient = new Client({
   webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
@@ -45,7 +46,35 @@ function addReply(reply, user) {
   }
 }
 
-async function fetchInitialData() {
+function startStomp(user) {
+  stompClient.onConnect = () => {
+    isReconnecting.value = false
+
+    stompClient.subscribe(`/discussion/newReply/${discussionId}`, message => {
+      const messageObject = JSON.parse(message.body)
+      if (messageObject.success) {
+        addReply(messageObject.replyDto, user)
+      }
+    })
+
+    stompClient.subscribe('/user/queue/errors', message => {
+      const errorObject = JSON.parse(message.body)
+      if (!errorObject.success) {
+        errorMessage.value = errorObject.message
+      }
+    })
+  }
+
+  stompClient.onWebSocketClose = () => {
+    isReconnecting.value = true
+  }
+
+  if (!stompClient.active) {
+    stompClient.activate()
+  }
+}
+
+async function fetchData() {
   try {
     const [userRes, discussionRes] = await Promise.all([
       fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'}),
@@ -79,26 +108,6 @@ async function fetchInitialData() {
   }
 }
 
-function startStomp(user) {
-  stompClient.onConnect = () => {
-    stompClient.subscribe(`/discussion/newReply/${discussionId}`, message => {
-      const messageObject = JSON.parse(message.body)
-      if (messageObject.success) {
-        addReply(messageObject.replyDto, user)
-      }
-    })
-
-    stompClient.subscribe('/user/queue/errors', message => {
-      const errorObject = JSON.parse(message.body)
-      if (!errorObject.success) {
-        errorMessage.value = errorObject.message
-      }
-    })
-  }
-
-  stompClient.activate()
-}
-
 function onSubmit(event) {
   event.preventDefault()
   errorMessage.value = ''
@@ -124,8 +133,15 @@ function onSubmit(event) {
   stompClient.publish({destination: '/app/sendReply', body: JSON.stringify(replyToSend)})
 }
 
+watch(isReconnecting, async (newValue, oldValue) => {
+  if (newValue === false && oldValue === true) {
+    errorMessage.value = ''
+    await fetchData()
+  }
+})
+
 onMounted(() => {
-  fetchInitialData()
+  fetchData()
 })
 
 onUnmounted(() => {
@@ -156,10 +172,13 @@ onUnmounted(() => {
             v-model="messageInput"
             placeholder="Введите сообщение"
             autocomplete="off"
+            :disabled="isReconnecting"
         />
-        <button type="submit">Отправить</button>
+        <button type="submit" :disabled="isReconnecting">Отправить</button>
       </div>
-      <div id="error-message" class="error-message">{{ errorMessage }}</div>
+      <div id="error-message" class="error-message">
+        {{ isReconnecting ? 'Обновление соединения...' : errorMessage }}
+      </div>
     </form>
   </div>
 </template>

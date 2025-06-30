@@ -12,8 +12,10 @@
     -webkit-text-fill-color: transparent;
     text-align: center;
     margin: 15px auto;
-    word-break: break-word;
-    white-space: break-spaces;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 #messages {
@@ -148,6 +150,20 @@ button[type="submit"] {
 button[type="submit"]:hover {
     background-color: #3a54a0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+input:disabled {
+    cursor: not-allowed;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+button:disabled:hover {
+    background-color: #4b6cb7;
+    box-shadow: none;
 }
 
 #error-message {
