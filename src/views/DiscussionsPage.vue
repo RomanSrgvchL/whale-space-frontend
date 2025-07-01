@@ -10,6 +10,8 @@ const newTitle = ref('')
 const message = reactive({text: '', color: ''})
 const isAdmin = computed(() => currentUser.value?.role === 'ROLE_ADMIN')
 
+const isDiscussionsLoaded = ref(false)
+
 const formattedDate = timestamp => new Date(timestamp).toLocaleString()
 const flash = (text, color = 'red') => {
   message.text = text;
@@ -25,6 +27,8 @@ const loadDiscussions = async () => {
   const res = await fetch(`${API_BASE_URL}/discussions`, {credentials: 'include'})
   if (!res.ok) return
   discussions.value = await res.json()
+
+  isDiscussionsLoaded.value = true
 }
 
 const createDiscussion = async () => {
@@ -110,6 +114,12 @@ onMounted(async () => {
       </div>
 
       <div id="discussions-list" class="discussions-list">
+          <div v-if="isDiscussionsLoaded && discussions.length === 0" class="no-discussions-message">
+            <p>
+              Администраторы пока не создали ни одного обсуждения
+            </p>
+          </div>
+
         <div
             v-for="discussion in discussions"
             :key="discussion.id"

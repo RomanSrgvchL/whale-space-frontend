@@ -165,3 +165,15 @@
     background-color: #3a54a0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
+
+.no-discussions-message {
+    margin: 0 auto;
+    padding: 10px;
+    max-width: 400px;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 20px;
+}
