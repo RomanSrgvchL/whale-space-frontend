@@ -1,9 +1,15 @@
 <script setup>
-import {ref, onMounted, onUnmounted, nextTick, watch} from 'vue'
+import {ref, onMounted, onUnmounted, nextTick, watch, reactive} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import SockJS from 'sockjs-client'
 import {Client} from '@stomp/stompjs'
-import {API_BASE_URL, HEARTBEAT_INCOMING, HEARTBEAT_OUTGOING, RECONNECT_DELAY} from '@/assets/scripts/config.js'
+import {
+  API_BASE_URL, DEFAULT_AVATAR,
+  HEARTBEAT_INCOMING,
+  HEARTBEAT_OUTGOING,
+  PRELOAD_AVATAR,
+  RECONNECT_DELAY
+} from '@/assets/scripts/config.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -16,6 +22,8 @@ const errorMessage = ref('')
 const messageInput = ref('')
 const messagesContainer = ref(null)
 const isReconnecting = ref(false)
+
+const avatarUrls = reactive({})
 
 const stompClient = new Client({
   webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
@@ -74,6 +82,34 @@ function startStomp(user) {
   }
 }
 
+function initAvatars(users) {
+  users.forEach(user => {
+    avatarUrls[user.id] = avatarUrls[user.id] ?? PRELOAD_AVATAR
+  })
+}
+
+async function fetchAvatar(user) {
+  if (avatarUrls[user.id] && avatarUrls[user.id] !== PRELOAD_AVATAR) {
+    return;
+  }
+
+  if (user.avatarFileName) {
+    try {
+      const avatarResponse = await fetch(
+          `${API_BASE_URL}/users/avatar/${encodeURIComponent(user.avatarFileName)}`,
+          {credentials: 'include'}
+      )
+      const avatarData = await avatarResponse.json()
+
+      avatarUrls[user.id] = avatarData.success ? avatarData.avatarUrl : DEFAULT_AVATAR
+    } catch {
+      avatarUrls[user.id] = DEFAULT_AVATAR
+    }
+  } else {
+    avatarUrls[user.id] = DEFAULT_AVATAR
+  }
+}
+
 async function fetchData() {
   try {
     const [userRes, discussionRes] = await Promise.all([
@@ -98,6 +134,11 @@ async function fetchData() {
     currentUser.value = userData
     discussionTitle.value = discussionData.title
     messages.value = [...discussionData.replies]
+
+    const users = messages.value.map(msg => msg.sender)
+    initAvatars(users)
+
+    await Promise.all(users.map(fetchAvatar))
 
     scrollToBottom()
 
@@ -140,6 +181,13 @@ watch(isReconnecting, async (newValue, oldValue) => {
   }
 })
 
+function firstMessageForUser(index) {
+  const currentMessage = messages.value[index]
+  const prevMessage = messages.value[index - 1]
+  return !prevMessage || prevMessage.sender.id !== currentMessage.sender.id
+}
+
+
 onMounted(() => {
   fetchData()
 })
@@ -156,13 +204,22 @@ onUnmounted(() => {
     <h2 id="discussion-title">{{ discussionTitle }}</h2>
     <div id="messages" class="messages" ref="messagesContainer">
       <div
-          v-for="message in messages"
+          v-for="(message, index) in messages"
           :key="message.id"
           :class="['message', message.sender.id === currentUser?.id ? 'self' : 'other']"
       >
-        <strong>{{ message.sender.username }}</strong>
-        <span>{{ message.content }}</span>
-        <small>{{ new Date(message.createdAt).toLocaleString() }}</small>
+        <div class="avatar-wrapper" :style="{ opacity: firstMessageForUser(index) ? 1 : 0 }">
+          <img
+              class="avatar-img"
+              :src="avatarUrls[message.sender.id]"
+              alt="avatar"
+          />
+        </div>
+        <div class="message-content">
+          <strong v-if="firstMessageForUser(index)">{{ message.sender.username }}</strong>
+          <span>{{ message.content }}</span>
+          <small>{{ new Date(message.createdAt).toLocaleString() }}</small>
+        </div>
       </div>
     </div>
     <form id="users-actions" @submit="onSubmit">
