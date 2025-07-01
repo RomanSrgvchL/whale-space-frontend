@@ -95,3 +95,19 @@
     margin: 5px 5px 5px 30px;
 }
 
+.no-chats-message {
+    margin: 0 auto;
+    padding: 10px;
+    max-width: 400px;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 20px;
+}
+
+.no-chats-message a {
+    color: #007bff;
+    text-decoration: underline;
+}

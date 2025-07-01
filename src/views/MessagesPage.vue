@@ -11,6 +11,7 @@ const PRELOAD_AVATAR = '/avatars/preload.jpg'
 const DEFAULT_AVATAR = '/avatars/default.jpg'
 
 const avatarUrls = reactive({})
+const isChatsLoaded = ref(false)
 
 const loadChats = async () => {
   const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
@@ -55,6 +56,8 @@ const loadChats = async () => {
       avatarUrls[chat.id] = DEFAULT_AVATAR
     }
   }
+
+  isChatsLoaded.value = true
 }
 
 const getOtherUser = (chat) => {
@@ -78,6 +81,13 @@ onMounted(() => {
 <template>
   <div class="container">
     <div id="chat-list">
+      <div v-if="isChatsLoaded && chats.length === 0" class="no-chats-message">
+        <p>
+          У вас пока нет чатов<br>
+          <router-link to="/users">Напишите</router-link> кому-нибудь первым!
+        </p>
+      </div>
+
       <div
           v-for="chat in chats"
           :key="chat.id"
