@@ -1,7 +1,7 @@
 <script setup>
 import {ref, reactive, computed, onMounted} from 'vue'
 import {useRouter} from 'vue-router'
-import {API_BASE_URL} from '@/assets/scripts/config.js'
+import {API_BASE_URL, PRELOAD_AVATAR, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
 
 const router = useRouter()
 const users = ref([])
@@ -9,9 +9,6 @@ const page = reactive({size: 6, current: 0, total: 0})
 const sort = reactive({field: 'createdAt', order: 'desc'})
 const dialogUsername = ref('')
 const message = reactive({text: '', color: ''})
-
-const PRELOAD_AVATAR = '/avatars/preload.jpg'
-const DEFAULT_AVATAR = '/avatars/default.jpg'
 
 const avatarUrls = reactive({})
 

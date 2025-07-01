@@ -17,14 +17,14 @@ const flash = (text, color = 'red') => {
 }
 
 const loadUser = async () => {
-  const r = await fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'})
-  currentUser.value = r.ok ? await r.json() : null
+  const res = await fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'})
+  currentUser.value = res.ok ? await res.json() : null
 }
 
 const loadDiscussions = async () => {
-  const r = await fetch(`${API_BASE_URL}/discussions`, {credentials: 'include'})
-  if (!r.ok) return
-  discussions.value = await r.json()
+  const res = await fetch(`${API_BASE_URL}/discussions`, {credentials: 'include'})
+  if (!res.ok) return
+  discussions.value = await res.json()
 }
 
 const createDiscussion = async () => {
@@ -41,7 +41,7 @@ const createDiscussion = async () => {
   })
   const data = await res.json()
   if (!res.ok) return flash(data.message)
-  flash(data.message, 'green')
+  flash('Обсуждение успешно создано!', 'green')
   newTitle.value = ''
   await loadDiscussions()
 }
@@ -59,6 +59,7 @@ const removeDiscussion = async id => {
     alert('Ошибка при удалении');
     return
   }
+  flash('', '')
   await loadDiscussions()
 }
 

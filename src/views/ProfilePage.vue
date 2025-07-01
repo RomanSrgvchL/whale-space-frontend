@@ -1,7 +1,7 @@
 <script setup>
 import {ref, onMounted, reactive} from 'vue'
 import {useRouter} from 'vue-router'
-import {API_BASE_URL} from '@/assets/scripts/config.js'
+import {API_BASE_URL, PRELOAD_AVATAR, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
 
 const router = useRouter()
 
@@ -15,9 +15,6 @@ const selectedFileCheckmarkVisible = ref(false)
 const message = reactive({text: '', color: ''})
 
 const formRef = ref(null)
-
-const PRELOAD_AVATAR = '/avatars/preload.jpg'
-const DEFAULT_AVATAR = '/avatars/default.jpg'
 
 const avatarUrls = reactive({avatar: PRELOAD_AVATAR})
 
