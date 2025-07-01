@@ -58,9 +58,33 @@ const onFileChange = () => {
   selectedFileCheckmarkVisible.value = fileInput.value?.files.length > 0
 }
 
+const checkImageSize = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < 400 || img.height < 400) {
+          reject('Минимальный размер изображения должен быть 400x400 пикселей');
+        } else {
+          resolve();
+        }
+      };
+      img.onerror = () => {
+        reject('Не удалось загрузить изображение для проверки размера');
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = () => {
+      reject('Ошибка чтения файла');
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 const submitForm = async (e) => {
   e.preventDefault()
-  flash('', 'white')
+  flash('', '')
 
   if (!fileInput.value?.files.length) {
     flash('Пожалуйста, выберите файл для загрузки')
@@ -76,6 +100,13 @@ const submitForm = async (e) => {
 
   if (file.size > 3 * 1024 * 1024) {
     flash('Размер файла не должен превышать 3 МБ')
+    return
+  }
+
+  try {
+    await checkImageSize(file)
+  } catch (errorMessage) {
+    flash(errorMessage)
     return
   }
 
@@ -111,12 +142,11 @@ const deleteAvatar = async () => {
       method: 'DELETE',
       credentials: 'include'
     })
-    const data = await response.json()
-
     if (response.ok) {
-      flash(data.message, 'green')
+      flash("Аватар успешно удалён!", 'green')
       await refreshAvatar()
     } else {
+      const data = await response.json()
       flash(data.message)
     }
   } catch (err) {
