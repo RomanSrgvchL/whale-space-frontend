@@ -89,7 +89,6 @@
     align-items: flex-start;
     gap: 10px;
     width: 100%;
-    flex-grow: 1;
 }
 
 .message-content {

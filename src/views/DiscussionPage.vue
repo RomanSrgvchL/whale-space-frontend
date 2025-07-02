@@ -41,6 +41,11 @@ function scrollToBottom() {
 }
 
 function addReply(reply, user) {
+  if (!avatarUrls[reply.sender.id]) {
+    avatarUrls[reply.sender.id] = PRELOAD_AVATAR
+    fetchAvatar(reply.sender)
+  }
+
   messages.value.push({
     id: reply.id,
     sender: reply.sender,
