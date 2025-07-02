@@ -17,6 +17,8 @@ const message = reactive({text: '', color: ''})
 const formRef = ref(null)
 
 const avatarUrls = reactive({avatar: PRELOAD_AVATAR})
+const isEditing = ref(false)
+const today = new Date().toISOString().split('T')[0]
 
 const refreshAvatar = async () => {
   try {
@@ -151,6 +153,82 @@ const deleteAvatar = async () => {
   }
 }
 
+const editableUserData = reactive({
+  bio: '',
+  gender: null,
+  birthDate: ''
+})
+
+const genderOptions = [
+  {value: null, text: 'Не указан'},
+  {value: 'MALE', text: 'Мужской'},
+  {value: 'FEMALE', text: 'Женский'}
+]
+
+const loadEditableUserData = () => {
+  if (!user.value) return
+  editableUserData.bio = user.value.bio
+  editableUserData.gender = user.value.gender
+  editableUserData.birthDate = user.value.birthDate
+}
+
+const startEditing = () => {
+  isEditing.value = true
+  flash('', '')
+}
+
+const cancelEditing = () => {
+  isEditing.value = false
+  flash('', '')
+  loadEditableUserData()
+}
+
+const saveChanges = async () => {
+  if (editableUserData.bio !== null) {
+    editableUserData.bio = editableUserData.bio.trim();
+    if (editableUserData.bio === '') {
+      editableUserData.bio = null;
+    }
+  }
+
+  if (
+      editableUserData.bio === user.value.bio &&
+      editableUserData.gender === user.value.gender &&
+      editableUserData.birthDate === user.value.birthDate
+  ) {
+    cancelEditing()
+    return
+  }
+
+  flash('', '')
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/me`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        bio: editableUserData.bio,
+        gender: editableUserData.gender,
+        birthDate: editableUserData.birthDate
+      })
+    })
+
+    const data = await response.json()
+
+    if (response.ok) {
+      user.value.bio = data.bio
+      user.value.gender = data.gender
+      user.value.birthDate = data.birthDate
+      isEditing.value = false
+      flash('Данные успешно обновлены!', 'green')
+    } else {
+      flash(data.message)
+    }
+  } catch (e) {
+    flash('Ошибка соединения')
+  }
+}
+
 onMounted(async () => {
   const response = await fetch(`${API_BASE_URL}/users/me`, {
     credentials: 'include'
@@ -166,32 +244,16 @@ onMounted(async () => {
   createdAt.value = new Date(user.value.createdAt).toLocaleString()
   role.value = user.value.role.replace(/^ROLE_/, '')
 
+  loadEditableUserData()
+
   await refreshAvatar()
 })
 </script>
 
 <template>
   <div class="container">
-    <div class="profile">
-      <div class="user-card">
-        <div class="user-info">
-          <div class="avatar-wrapper">
-            <img
-                class="avatar-img"
-                :src="avatarUrls.avatar"
-                alt=""
-            />
-          </div>
-          <p class="username" id="username">{{ username }}</p>
-          <p class="registered-label">
-            Дата регистрации:<br/>
-            <span class="date" id="created-at">{{ createdAt }}</span>
-          </p>
-          <p class="role" id="role">{{ role }}</p>
-        </div>
-      </div>
-
-      <div class="profile-actions">
+    <div class="profile layout">
+      <div class="avatar-actions">
         <form
             ref="formRef"
             id="avatar-upload-form"
@@ -201,8 +263,7 @@ onMounted(async () => {
           <span
               id="selected-file-checkmark"
               :class="{ visible: selectedFileCheckmarkVisible }"
-          >✔️</span
-          >
+          >✔️</span>
           <label for="avatar-file" class="file-label">
             <span class="file-icon">📁</span>
             <span class="file-text">Выбрать изображение</span>
@@ -217,20 +278,71 @@ onMounted(async () => {
           </label>
         </form>
 
-        <div class="button-group">
-          <button type="submit" form="avatar-upload-form" class="discussion-button upload">
+        <div class="avatar-button-group">
+          <button type="submit" form="avatar-upload-form" class="upload-button upload">
             Загрузить аватар
           </button>
-          <button
-              id="delete-avatar-btn"
-              class="discussion-button delete"
-              @click.prevent="deleteAvatar"
-          >
+          <button id="delete-avatar-btn" class="upload-button delete" @click.prevent="deleteAvatar">
             Удалить аватар
           </button>
         </div>
+      </div>
 
-        <div id="message" :style="{ color: message.color }">{{ message.text }}</div>
+      <div class="user-wrapper">
+        <div class="user-card">
+          <div class="user-info">
+            <div class="avatar-wrapper">
+              <img
+                  class="avatar-img"
+                  :src="avatarUrls.avatar"
+                  alt="avatar"
+              />
+            </div>
+            <p class="username" id="username">{{ username }}</p>
+            <p class="registered-label">
+              Дата регистрации:<br/>
+              <span class="date" id="created-at">{{ createdAt }}</span>
+            </p>
+            <p class="role" id="role">{{ role }}</p>
+          </div>
+        </div>
+        <div id="message" class="message-bottom" :style="{ color: message.color }">{{ message.text }}</div>
+      </div>
+
+      <div class="profile-edit">
+        <label for="bio">Биография:</label>
+        <textarea
+            id="bio"
+            v-model="editableUserData.bio"
+            :readonly="!isEditing"
+            maxlength="120"
+            rows="4"
+        ></textarea>
+
+        <label for="gender">Пол:</label>
+        <select id="gender" v-model="editableUserData.gender" :disabled="!isEditing">
+          <option v-for="option in genderOptions" :key="option.value" :value="option.value">
+            {{ option.text }}
+          </option>
+        </select>
+
+        <label for="birthDate">Дата рождения:</label>
+        <input
+            id="birthDate"
+            type="date"
+            v-model="editableUserData.birthDate"
+            :readonly="!isEditing"
+            min="1900-01-01"
+            :max="today"
+        />
+
+        <div class="info-button-group">
+          <button v-if="!isEditing" @click="startEditing" type="button">Изменить</button>
+          <div v-else>
+            <button @click="saveChanges" type="button">Сохранить</button>
+            <button @click="cancelEditing" type="button">Отменить</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
