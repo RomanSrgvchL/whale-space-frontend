@@ -128,7 +128,7 @@ onMounted(async () => {
           <div class="discussion-info">
             <div class="discussion-title">{{ discussion.title }}</div>
             <div class="discussion-meta">
-              Создал: {{ discussion.creator.username }} • {{ formattedDate(discussion.createdAt) }}
+              <span>Создал: {{ discussion.creator.username }} • {{ formattedDate(discussion.createdAt) }}</span>
             </div>
           </div>
 

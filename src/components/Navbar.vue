@@ -20,7 +20,7 @@ onMounted(checkAuth)
         </template>
         <template v-else-if="isAuth">
           <RouterLink to="/messages">Сообщения</RouterLink>
-          <RouterLink to="/profile">Профиль</RouterLink>
+          <RouterLink to="/profile/me">Профиль</RouterLink>
           <RouterLink to="/logout">Выйти</RouterLink>
         </template>
         <template v-else>

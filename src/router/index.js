@@ -5,7 +5,8 @@ const Home = () => import('@/views/HomePage.vue')
 const Discussions = () => import('@/views/DiscussionsPage.vue')
 const Users = () => import('@/views/UsersPage.vue')
 const Messages = () => import('@/views/MessagesPage.vue')
-const Profile = () => import('@/views/ProfilePage.vue')
+const MyProfile = () => import('@/views/MyProfilePage.vue')
+const UserProfile = () => import('@/views/UserProfilePage.vue')
 const Login = () => import('@/views/LoginPage.vue')
 const Registration = () => import('@/views/RegistrationPage.vue')
 const Logout = () => import('@/views/LogoutPage.vue')
@@ -17,7 +18,8 @@ const routes = [
     {path: '/discussions', component: Discussions, meta: {title: 'Обсуждения'}},
     {path: '/users', component: Users, meta: {title: 'Пользователи'}},
     {path: '/messages', component: Messages, meta: {title: 'Сообщения', auth: true}},
-    {path: '/profile', component: Profile, meta: {title: 'Профиль', auth: true}},
+    {path: '/profile/me', component: MyProfile, meta: {title: 'Профиль', auth: true}},
+    {path: '/profile/:id', component: UserProfile, meta: {title: 'Профиль', auth: true}},
     {path: '/login', component: Login, meta: {title: 'Войти', guest: true}},
     {path: '/registration', component: Registration, meta: {title: 'Зарегистрироваться', guest: true}},
     {path: '/logout', component: Logout, meta: {title: 'Выйти', auth: true}},

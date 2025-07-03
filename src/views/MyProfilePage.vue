@@ -317,6 +317,7 @@ onMounted(async () => {
             :readonly="!isEditing"
             maxlength="120"
             rows="4"
+            placeholder="Расскажи немного о себе..."
         ></textarea>
 
         <label for="gender">Пол:</label>
@@ -349,5 +350,5 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-@import '@/assets/styles/profile.css';
+@import '@/assets/styles/my-profile.css';
 </style>

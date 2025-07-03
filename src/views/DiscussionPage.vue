@@ -221,7 +221,14 @@ onUnmounted(() => {
           />
         </div>
         <div class="message-content">
-          <strong v-if="firstMessageForUser(index)">{{ message.sender.username }}</strong>
+          <div v-if="firstMessageForUser(index)">
+            <router-link
+                :to="message.sender.id === currentUser?.id ? '/profile/me' : `/profile/${message.sender.id}`"
+                class="username"
+            >
+              {{ message.sender.username }}
+            </router-link>
+          </div>
           <span>{{ message.content }}</span>
           <small>{{ new Date(message.createdAt).toLocaleString() }}</small>
         </div>

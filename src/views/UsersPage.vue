@@ -1,7 +1,7 @@
 <script setup>
-import {ref, reactive, computed, onMounted} from 'vue'
+import {computed, onMounted, reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {API_BASE_URL, PRELOAD_AVATAR, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
+import {API_BASE_URL, DEFAULT_AVATAR, PRELOAD_AVATAR} from '@/assets/scripts/config.js'
 
 const router = useRouter()
 const users = ref([])
@@ -11,6 +11,7 @@ const dialogUsername = ref('')
 const message = reactive({text: '', color: ''})
 
 const avatarUrls = reactive({})
+const currentUser = ref(null)
 
 const formattedDate = timestamp => new Date(timestamp).toLocaleString()
 const flash = (text, color = 'red') => {
@@ -170,8 +171,17 @@ async function submitDialog(e) {
   }
 }
 
-onMounted(() => {
-  fetchUsers(0)
+onMounted(async () => {
+  await fetchUsers(0)
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/me`, {credentials: 'include'})
+    if (res.ok) {
+      currentUser.value = await res.json()
+    }
+  } catch (error) {
+    console.error('Ошибка при получении текущего пользователя:', error)
+  }
 })
 </script>
 
@@ -192,7 +202,12 @@ onMounted(() => {
                   alt=""
               />
             </div>
-            <p class="username">{{ user.username }}</p>
+            <router-link
+                class="username"
+                :to="currentUser && user.id === currentUser.id ? '/profile/me' : `/profile/${user.id}`"
+            >
+              {{ user.username }}
+            </router-link>
             <p class="registered-label">
               Дата регистрации:<br/>
               <span class="date">{{ formattedDate(user.createdAt) }}</span>

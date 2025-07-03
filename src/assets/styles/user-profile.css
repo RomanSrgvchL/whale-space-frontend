@@ -1,0 +1,198 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 84vh !important;
+    height: 100% !important;
+}
+
+.profile {
+    display: flex;
+    gap: 50px;
+    flex-grow: 1;
+    padding: 20px;
+    border: 2px solid #4b6cb7;
+    border-radius: 12px;
+    background-color: #f7faff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    justify-content: center;
+    align-items: center;
+}
+
+.user-wrapper {
+    width: 90%;
+    gap: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.user-card {
+    width: 40%;
+    padding: 0 16px;
+    border: 2px solid #3f8efc;
+    border-radius: 10px;
+    background-color: #ffffff;
+    text-align: center;
+    font-size: 15px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+}
+
+.username {
+    display: inline-block;
+    margin: 0;
+    padding: 6px 12px;
+    border: 2px solid #3f8efc;
+    border-radius: 8px;
+    background-color: #e7f0ff;
+    color: #1a3f8f;
+    font-weight: 600;
+    font-size: 20px;
+    white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.role {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #446;
+    text-transform: capitalize;
+    user-select: none;
+}
+
+.registered-label {
+    display: inline-block;
+    margin: 0;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background-color: #e3edf7;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    user-select: none;
+}
+
+.date {
+    font-weight: 700;
+    color: #1c2b39;
+    font-style: normal;
+    background-color: transparent;
+    margin-left: 5px;
+    font-size: 16px;
+}
+
+.avatar-wrapper {
+    width: 120px;
+    height: 120px;
+    margin: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid rgba(182, 179, 179, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f5ff;
+}
+
+.avatar-wrapper .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    user-select: none;
+    pointer-events: none;
+}
+
+.additional-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 12px 16px;
+    border: 2px solid #3f8efc;
+    border-radius: 10px;
+    background-color: #e7f0ff;
+    width: 40%;
+}
+
+.additional-info > div {
+    width: 100%;
+    padding: 12px;
+    background-color: white;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    word-break: break-word;
+    flex-wrap: wrap;
+}
+
+.additional-info > div span.value {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.additional-info .bio {
+    border-bottom: 4px solid #4CAF50;
+    padding-bottom: 8px;
+}
+
+.additional-info .gender {
+    border-bottom: 4px solid #FF9800;
+    padding-bottom: 8px;
+}
+
+.additional-info .birthdate {
+    border-bottom: 4px solid #2196F3;
+    padding-bottom: 8px;
+}
+
+.additional-info > div strong {
+    color: #1a3f8f;
+    font-weight: 700;
+    margin-right: 5px;
+    white-space: nowrap;
+}
+
+.additional-info > div span.value {
+    color: #292828;
+    font-size: 16px;
+}
+
+.additional-info > div span.value.default-value {
+    color: #556f93;
+    font-size: 16px;
+}
+
+.write-message-btn {
+    flex-shrink: 0;
+    background-color: #4b6cb7;
+    color: white;
+    font-size: 16px;
+    padding: 12px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    border-radius: 12px;
+    height: 44px;
+    white-space: nowrap;
+    margin-left: 0;
+}
+
+.write-message-btn:hover {
+    background-color: #3a54a0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}

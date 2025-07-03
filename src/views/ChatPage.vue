@@ -202,10 +202,18 @@ onUnmounted(() => {
       <div class="chat-title-row">
         <div class="chat-user left">
           <span class="arrow">🡆</span>
-          <span class="username">{{ currentUser?.username || '' }}</span>
+          <router-link class="username" :to="'/profile/me'">
+            {{ currentUser?.username || '' }}
+          </router-link>
         </div>
         <div class="chat-user right">
-          <span class="username">{{ otherUser?.username || '' }}</span>
+          <router-link
+              class="username"
+              v-if="otherUser"
+              :to="`/profile/${otherUser.id}`"
+          >
+            {{ otherUser.username }}
+          </router-link>
           <span class="arrow">🡄</span>
         </div>
       </div>
