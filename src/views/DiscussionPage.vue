@@ -40,21 +40,21 @@ function scrollToBottom() {
   })
 }
 
-function addReply(reply, user) {
-  if (!avatarUrls[reply.sender.id]) {
-    avatarUrls[reply.sender.id] = PRELOAD_AVATAR
-    fetchAvatar(reply.sender)
+function addMessage(message, user) {
+  if (!avatarUrls[message.sender.id]) {
+    avatarUrls[message.sender.id] = PRELOAD_AVATAR
+    fetchAvatar(message.sender)
   }
 
   messages.value.push({
-    id: reply.id,
-    sender: reply.sender,
-    content: reply.content,
-    createdAt: reply.createdAt
+    id: message.id,
+    sender: message.sender,
+    content: message.content,
+    createdAt: message.createdAt
   })
   scrollToBottom()
 
-  if (reply.sender.id === user.id) {
+  if (message.sender.id === user.id) {
     messageInput.value = ''
   }
 }
@@ -63,10 +63,10 @@ function startStomp(user) {
   stompClient.onConnect = () => {
     isReconnecting.value = false
 
-    stompClient.subscribe(`/discussion/newReply/${discussionId}`, message => {
+    stompClient.subscribe(`/discussion/newDiscussionMsg/${discussionId}`, message => {
       const messageObject = JSON.parse(message.body)
       if (messageObject.success) {
-        addReply(messageObject.replyDto, user)
+        addMessage(messageObject.discussionMsgDto, user)
       }
     })
 
@@ -138,7 +138,7 @@ async function fetchData() {
 
     currentUser.value = userData
     discussionTitle.value = discussionData.title
-    messages.value = [...discussionData.replies]
+    messages.value = [...discussionData.messages]
 
     const users = messages.value.map(msg => msg.sender)
     initAvatars(users)
@@ -158,25 +158,25 @@ function onSubmit(event) {
   event.preventDefault()
   errorMessage.value = ''
 
-  const content = messageInput.value.trim()
+  const trimmedContent = messageInput.value.trim()
 
-  if (!content) {
+  if (!trimmedContent) {
     errorMessage.value = 'Сообщение не должно быть пустым'
     return
   }
 
-  if (content.length > 200) {
+  if (trimmedContent.length > 200) {
     errorMessage.value = 'Длина сообщения не должна превышать 200 символов'
     return
   }
 
-  const replyToSend = {
+  const messageToSend = {
     discussionId: Number(discussionId),
     senderId: currentUser.value.id,
-    content
+    content: trimmedContent
   }
 
-  stompClient.publish({destination: '/app/sendReply', body: JSON.stringify(replyToSend)})
+  stompClient.publish({destination: '/app/sendDiscussionMsg', body: JSON.stringify(messageToSend)})
 }
 
 watch(isReconnecting, async (newValue, oldValue) => {

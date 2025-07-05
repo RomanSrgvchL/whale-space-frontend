@@ -51,11 +51,11 @@ function startStomp() {
   stompClient.onConnect = () => {
     isReconnecting.value = false
 
-    stompClient.subscribe(`/chat/newMessage/${chatId}`, message => {
+    stompClient.subscribe(`/chat/newChatMsg/${chatId}`, message => {
       const messageObject = JSON.parse(message.body)
       if (messageObject.success) {
-        addMessage(messageObject.messageDto)
-        if (messageObject.messageDto.sender.id === currentUser.value.id) {
+        addMessage(messageObject.chatMsgDto)
+        if (messageObject.chatMsgDto.sender.id === currentUser.value.id) {
           messageInput.value = ''
         }
       }
@@ -168,7 +168,7 @@ function onSubmit(e) {
     content: trimmedContent,
   }
 
-  stompClient.publish({destination: '/app/sendMessage', body: JSON.stringify(messageToSend)})
+  stompClient.publish({destination: '/app/sendChatMsg', body: JSON.stringify(messageToSend)})
 }
 
 watch(isReconnecting, async (newValue, oldValue) => {
