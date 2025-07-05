@@ -63,18 +63,9 @@ function startStomp(user) {
   stompClient.onConnect = () => {
     isReconnecting.value = false
 
-    stompClient.subscribe(`/discussion/newDiscussionMsg/${discussionId}`, message => {
-      const messageObject = JSON.parse(message.body)
-      if (messageObject.success) {
-        addMessage(messageObject.discussionMsgDto, user)
-      }
-    })
-
-    stompClient.subscribe('/user/queue/errors', message => {
-      const errorObject = JSON.parse(message.body)
-      if (!errorObject.success) {
-        errorMessage.value = errorObject.message
-      }
+    stompClient.subscribe(`/discussion/newMessage/${discussionId}`, message => {
+      const discussionMsg = JSON.parse(message.body)
+      addMessage(discussionMsg, user)
     })
   }
 
@@ -154,7 +145,7 @@ async function fetchData() {
   }
 }
 
-function onSubmit(event) {
+async function onSubmit(event) {
   event.preventDefault()
   errorMessage.value = ''
 
@@ -170,13 +161,30 @@ function onSubmit(event) {
     return
   }
 
-  const messageToSend = {
+  const message = {
     discussionId: Number(discussionId),
-    senderId: currentUser.value.id,
     content: trimmedContent
   }
 
-  stompClient.publish({destination: '/app/sendDiscussionMsg', body: JSON.stringify(messageToSend)})
+  try {
+    const response = await fetch(`${API_BASE_URL}/discussionMessages`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(message)
+    })
+
+    const responseData = await response.json()
+
+    if (!response.ok) {
+      errorMessage.value = responseData.message
+    }
+  } catch (err) {
+    console.error('Ошибка при отправке:', err)
+    errorMessage.value = 'Не удалось отправить сообщение'
+  }
 }
 
 watch(isReconnecting, async (newValue, oldValue) => {

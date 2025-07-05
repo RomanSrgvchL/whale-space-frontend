@@ -51,20 +51,11 @@ function startStomp() {
   stompClient.onConnect = () => {
     isReconnecting.value = false
 
-    stompClient.subscribe(`/chat/newChatMsg/${chatId}`, message => {
-      const messageObject = JSON.parse(message.body)
-      if (messageObject.success) {
-        addMessage(messageObject.chatMsgDto)
-        if (messageObject.chatMsgDto.sender.id === currentUser.value.id) {
-          messageInput.value = ''
-        }
-      }
-    })
-
-    stompClient.subscribe('/user/queue/errors', message => {
-      const errorObject = JSON.parse(message.body)
-      if (!errorObject.success) {
-        errorMessage.value = errorObject.message
+    stompClient.subscribe(`/chat/newMessage/${chatId}`, message => {
+      const chatMsg = JSON.parse(message.body)
+      addMessage(chatMsg)
+      if (chatMsg.sender.id === currentUser.value.id) {
+        messageInput.value = ''
       }
     })
   }
@@ -146,7 +137,7 @@ async function fetchData() {
   }
 }
 
-function onSubmit(e) {
+async function onSubmit(e) {
   e.preventDefault()
   errorMessage.value = ''
 
@@ -162,13 +153,30 @@ function onSubmit(e) {
     return
   }
 
-  const messageToSend = {
+  const message = {
     chatId: Number(chatId),
-    senderId: currentUser.value.id,
-    content: trimmedContent,
+    content: trimmedContent
   }
 
-  stompClient.publish({destination: '/app/sendChatMsg', body: JSON.stringify(messageToSend)})
+  try {
+    const response = await fetch(`${API_BASE_URL}/chatMessages`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(message)
+    })
+
+    const responseData = await response.json()
+
+    if (!response.ok) {
+      errorMessage.value = responseData.message
+    }
+  } catch (err) {
+    console.error('Ошибка при отправке:', err)
+    errorMessage.value = 'Не удалось отправить сообщение'
+  }
 }
 
 watch(isReconnecting, async (newValue, oldValue) => {
