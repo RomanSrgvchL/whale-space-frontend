@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 import {isAuth, checkAuth} from '@/stores/auth.js'
 
 const Home = () => import('@/views/HomePage.vue')
+const Posts = () => import('@/views/PostsPage.vue')
 const Discussions = () => import('@/views/DiscussionsPage.vue')
 const Users = () => import('@/views/UsersPage.vue')
 const Messages = () => import('@/views/MessagesPage.vue')
@@ -15,6 +16,7 @@ const Chat = () => import('@/views/ChatPage.vue')
 
 const routes = [
     {path: '/home', component: Home, meta: {title: 'Главная'}},
+    {path: '/posts', component: Posts, meta: {title: 'Посты'}},
     {path: '/discussions', component: Discussions, meta: {title: 'Обсуждения'}},
     {path: '/users', component: Users, meta: {title: 'Пользователи'}},
     {path: '/messages', component: Messages, meta: {title: 'Сообщения', auth: true}},

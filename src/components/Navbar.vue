@@ -10,6 +10,7 @@ onMounted(checkAuth)
     <nav>
       <div class="left-side">
         <RouterLink to="/home">Главная</RouterLink>
+        <RouterLink to="/posts">Посты</RouterLink>
         <RouterLink to="/discussions">Обсуждения</RouterLink>
         <RouterLink to="/users">Пользователи</RouterLink>
       </div>
