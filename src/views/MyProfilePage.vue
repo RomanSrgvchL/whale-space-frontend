@@ -1,9 +1,6 @@
 <script setup>
 import {ref, onMounted, reactive} from 'vue'
-import {useRouter} from 'vue-router'
 import {API_BASE_URL, PRELOAD_AVATAR, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
-
-const router = useRouter()
 
 const user = ref(null)
 const createdAt = ref('')
@@ -263,11 +260,6 @@ onMounted(async () => {
   const response = await fetch(`${API_BASE_URL}/users/me`, {
     credentials: 'include'
   })
-
-  if (!response.ok) {
-    await router.push('/home')
-    return
-  }
 
   user.value = await response.json()
   username.value = user.value.username
