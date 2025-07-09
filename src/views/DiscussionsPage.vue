@@ -35,7 +35,7 @@ const createDiscussion = async () => {
   message.text = ''
   const title = newTitle.value.trim()
   if (!title) return flash('Тема не должна быть пустой')
-  if (title.length < 5 || title.length > 100) return flash('Длина темы должна быть от 5 до 100 символов')
+  if (title.length < 5) return flash('Длина темы должна быть от 5 символов')
 
   const res = await fetch(`${API_BASE_URL}/discussions`, {
     method: 'POST',
@@ -105,7 +105,12 @@ onMounted(async () => {
       >
         <h3>Создать обсуждение:</h3>
         <form id="create-discussion-form" @submit.prevent="createDiscussion">
-          <input v-model.trim="newTitle" name="title" placeholder="Тема обсуждения"/>
+          <input
+              v-model.trim="newTitle"
+              name="title"
+              placeholder="Тема обсуждения"
+              maxlength="100"
+          />
           <div class="form-actions">
             <button type="submit">Создать</button>
             <div id="message" :style="{ color: message.color }">{{ message.text }}</div>

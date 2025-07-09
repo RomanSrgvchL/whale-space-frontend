@@ -183,11 +183,6 @@ async function onSubmit(event) {
     return
   }
 
-  if (trimmedContent.length > 200) {
-    errorMessage.value = 'Длина сообщения не должна превышать 200 символов'
-    return
-  }
-
   const formData = new FormData()
   formData.append('discussionId', discussionId)
   formData.append('content', trimmedContent)
