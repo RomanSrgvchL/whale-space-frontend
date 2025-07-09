@@ -52,11 +52,6 @@ onMounted(async () => {
       credentials: 'include'
     })
 
-    if (!res.ok) {
-      await router.push('/home')
-      return
-    }
-
     user.value = await res.json()
 
     if (user.value.avatarFileName) {
