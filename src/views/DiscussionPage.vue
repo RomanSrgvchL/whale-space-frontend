@@ -409,5 +409,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+@import '@/assets/styles/avatars.css';
 @import '@/assets/styles/discussion.css';
 </style>

@@ -1,16 +1,18 @@
 <script setup>
 import {ref, reactive, computed, onMounted} from 'vue'
 import {useRouter} from 'vue-router'
-import {API_BASE_URL} from '@/assets/scripts/config.js'
+import {API_BASE_URL, ROLE_ADMIN, DEFAULT_AVATAR, PRELOAD_AVATAR} from '@/assets/scripts/config.js'
 
 const router = useRouter()
 const discussions = ref([])
 const currentUser = ref(null)
 const newTitle = ref('')
 const message = reactive({text: '', color: ''})
-const isAdmin = computed(() => currentUser.value?.role === 'ROLE_ADMIN')
+const isAdmin = computed(() => currentUser.value?.role === ROLE_ADMIN)
 
 const isDiscussionsLoaded = ref(false)
+
+const avatarUrls = reactive({})
 
 const formattedDate = timestamp => new Date(timestamp).toLocaleString()
 const flash = (text, color = 'red') => {
@@ -27,8 +29,27 @@ const loadDiscussions = async () => {
   const res = await fetch(`${API_BASE_URL}/discussions`, {credentials: 'include'})
   if (!res.ok) return
   discussions.value = await res.json()
-
   isDiscussionsLoaded.value = true
+
+  for (const discussion of discussions.value) {
+    const userId = discussion.creator.id
+    avatarUrls[userId] = PRELOAD_AVATAR
+
+    if (!discussion.creator.avatarFileName) {
+      avatarUrls[userId] = DEFAULT_AVATAR
+      continue
+    }
+
+    try {
+      const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(discussion.creator.avatarFileName)}`, {
+        credentials: 'include'
+      })
+      const dataAvatar = await resAvatar.json()
+      avatarUrls[userId] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
+    } catch {
+      avatarUrls[userId] = DEFAULT_AVATAR
+    }
+  }
 }
 
 const createDiscussion = async () => {
@@ -69,8 +90,7 @@ const removeDiscussion = async id => {
 
 const openDiscussion = async (id) => {
   if (!currentUser.value) {
-    alert('Авторизуйтесь чтобы перейти в обсуждение');
-    return;
+    await router.push("/login");
   }
 
   try {
@@ -119,11 +139,11 @@ onMounted(async () => {
       </div>
 
       <div id="discussions-list" class="discussions-list">
-          <div v-if="isDiscussionsLoaded && discussions.length === 0" class="no-discussions-message">
-            <p>
-              Администраторы пока не создали ни одного обсуждения
-            </p>
-          </div>
+        <div v-if="isDiscussionsLoaded && discussions.length === 0" class="no-discussions-message">
+          <p>
+            Администраторы пока не создали ни одного обсуждения
+          </p>
+        </div>
 
         <div
             v-for="discussion in discussions"
@@ -131,10 +151,24 @@ onMounted(async () => {
             class="discussion-card"
         >
           <div class="discussion-info">
-            <div class="discussion-title">{{ discussion.title }}</div>
             <div class="discussion-meta">
-              <span>Создал: {{ discussion.creator.username }} • {{ formattedDate(discussion.createdAt) }}</span>
+              <div class="avatar-wrapper">
+                <img
+                    class="avatar-img"
+                    :src="avatarUrls[discussion.creator.id] || PRELOAD_AVATAR"
+                    alt=""
+                />
+              </div>
+              <router-link
+                  class="username"
+                  :to="currentUser && discussion.creator.id === currentUser.id
+                  ? '/profile/me'
+                  : `/profile/${discussion.creator.id}`"
+              >
+                <strong>{{ discussion.creator.username }}</strong>
+              </router-link>
             </div>
+            <div class="discussion-title">{{ discussion.title }}</div>
           </div>
 
           <div class="button-group">
@@ -153,6 +187,7 @@ onMounted(async () => {
               Перейти
             </button>
           </div>
+          <div class="created-date">{{ formattedDate(discussion.createdAt) }}</div>
         </div>
       </div>
     </div>
@@ -160,5 +195,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+@import '@/assets/styles/avatars.css';
 @import '@/assets/styles/discussions.css';
 </style>

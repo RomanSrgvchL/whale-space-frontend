@@ -279,5 +279,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+@import '@/assets/styles/avatars.css';
 @import '@/assets/styles/users.css';
 </style>

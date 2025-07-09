@@ -120,23 +120,55 @@
     padding-right: 30px;
     flex: 1 1 auto;
     min-width: 0;
-    overflow: hidden;
+    gap: 10px;
 }
 
 .discussion-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1a3f8f;
-    margin-bottom: 4px;
+    margin-left: 3px;
+    margin-top: 10px;
+    font-size: 19px;
     white-space: pre;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 700;
+    background: linear-gradient(180deg, #4b6cb7, #182848);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    max-width: 100%;
 }
 
 .discussion-meta {
     font-size: 14px;
     color: #555;
     white-space: pre;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.username {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre;
+    text-decoration: none;
+    font-size: 18px;
+    color: #324a80;
+    font-weight: 600;
+}
+
+.username:hover {
+    color: #2a3b5f;
+    text-decoration: underline;
+}
+
+.created-date {
+    font-size: 14px;
+    color: #888;
+    margin-left: auto;
+    margin-top: auto;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -176,4 +208,9 @@
     background-color: #f9f9f9;
     color: #333;
     font-size: 20px;
+}
+
+.avatar-wrapper {
+    width: 45px;
+    height: 45px;
 }

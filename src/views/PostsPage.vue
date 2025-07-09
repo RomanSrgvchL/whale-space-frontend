@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { API_BASE_URL } from '@/assets/scripts/config.js'
+import {ref, onMounted, reactive} from 'vue'
+import {useRouter} from 'vue-router'
+import {API_BASE_URL, ROLE_ADMIN, DEFAULT_AVATAR, PRELOAD_AVATAR} from '@/assets/scripts/config.js'
 
 const router = useRouter()
 
@@ -9,8 +9,59 @@ const posts = ref([])
 const isPostsLoaded = ref(false)
 
 const selectedPost = ref(null)
-const newPostContent = ref('')
-const user = ref(null)
+const currentUser = ref(null)
+const newCommentContent = ref('')
+
+const avatarUrls = reactive({})
+
+async function loadAvatarsForPosts(postsArray) {
+  const userIds = new Set()
+  const usersToLoad = []
+
+  for (const post of postsArray) {
+    if (post.author && post.author.id && !avatarUrls[post.author.id]) {
+      userIds.add(post.author.id)
+      usersToLoad.push(post.author)
+    }
+    if (post.comments && post.comments.length > 0) {
+      for (const comment of post.comments) {
+        if (comment.author && comment.author.id && !avatarUrls[comment.author.id]) {
+          userIds.add(comment.author.id)
+          usersToLoad.push(comment.author)
+        }
+      }
+    }
+  }
+
+  for (const userItem of usersToLoad) {
+    avatarUrls[userItem.id] = PRELOAD_AVATAR
+
+    if (!userItem.avatarFileName) {
+      avatarUrls[userItem.id] = DEFAULT_AVATAR
+      continue
+    }
+
+    try {
+      const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(userItem.avatarFileName)}`, {
+        credentials: 'include'
+      })
+      const dataAvatar = await resAvatar.json()
+      avatarUrls[userItem.id] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
+    } catch {
+      avatarUrls[userItem.id] = DEFAULT_AVATAR
+    }
+  }
+}
+
+const canDeletePost = (post) => {
+  const role = currentUser.value?.role
+  return role === ROLE_ADMIN || post.author.id === currentUser.value?.id
+}
+
+const canDeleteComment = (comment) => {
+  const role = currentUser.value?.role
+  return role === ROLE_ADMIN || comment.author.id === currentUser.value?.id
+}
 
 const loadPosts = async () => {
   try {
@@ -25,6 +76,8 @@ const loadPosts = async () => {
 
     posts.value = await res.json()
     isPostsLoaded.value = true
+
+    await loadAvatarsForPosts(posts.value)
   } catch {
     console.log('Ошибка загрузки постов')
   }
@@ -38,8 +91,15 @@ const deletePost = async (postId) => {
     })
 
     if (res.ok) {
-      // после удаления обновим список постов
+      if (selectedPost.value && selectedPost.value.id === postId) {
+        closePostView()
+      }
       await loadPosts()
+    } else if (res.status === 404) {
+      alert('Этот пост уже удалён')
+      if (selectedPost.value && selectedPost.value.id === postId) {
+        closePostView()
+      }
     } else {
       alert('Не удалось удалить пост')
     }
@@ -48,23 +108,61 @@ const deletePost = async (postId) => {
   }
 }
 
-const fetchPostWithComments = async (postId) => {
+const deleteComment = async (commentId) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+    const res = await fetch(`${API_BASE_URL}/comments/${commentId}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
+
+    if (res.ok) {
+      await reloadSelectedPost()
+    } else if (res.status === 404) {
+      alert('Этот комментарий уже удалён')
+    } else {
+      alert('Не удалось удалить комментарий')
+    }
+  } catch (e) {
+    alert('Ошибка при удалении комментария')
+  }
+}
+
+const updatePostInList = (updatedPost) => {
+  const index = posts.value.findIndex(p => p.id === updatedPost.id)
+  if (index !== -1) {
+    const commentCount = updatedPost.comments ? updatedPost.comments.length : 0
+
+    posts.value[index] = {
+      ...updatedPost,
+      commentCount
+    }
+  }
+}
+
+const reloadSelectedPost = async () => {
+  if (!selectedPost.value) return
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/${selectedPost.value.id}`, {
       credentials: 'include'
     })
     if (res.ok) {
-      selectedPost.value = await res.json()
-    } else {
-      alert('Не удалось загрузить пост')
+      const updatedPost = await res.json()
+      selectedPost.value = updatedPost
+      updatePostInList(updatedPost)
     }
   } catch (e) {
-    alert('Ошибка при загрузке поста')
+    console.log('Ошибка при обновлении поста')
   }
 }
 
 const togglePostLike = async (post) => {
-  const hasLiked = post.likedUserIds.includes(user.value.id)
+  if (!currentUser.value) {
+    await router.push('/login')
+    return
+  }
+
+  const hasLiked = post.likedUserIds.includes(currentUser.value.id)
   const method = hasLiked ? 'DELETE' : 'POST'
 
   try {
@@ -74,18 +172,30 @@ const togglePostLike = async (post) => {
     })
     if (res.ok) {
       if (hasLiked) {
-        post.likedUserIds = post.likedUserIds.filter(id => id !== user.value.id)
+        post.likedUserIds = post.likedUserIds.filter(id => id !== currentUser.value.id)
       } else {
-        post.likedUserIds.push(user.value.id)
+        post.likedUserIds.push(currentUser.value.id)
       }
+    } else if (res.status === 404) {
+      alert('Этот пост уже удалён')
+      if (selectedPost.value && selectedPost.value.id === post.id) {
+        closePostView()
+      }
+    } else {
+      alert('Ошибка при обработке лайка поста')
     }
   } catch (e) {
-    alert('Ошибка при обработке лайка')
+    alert('Ошибка при обработке лайка поста')
   }
 }
 
 const toggleCommentLike = async (comment) => {
-  const hasLiked = comment.likedUserIds.includes(user.value.id)
+  if (!currentUser.value) {
+    await router.push('/login')
+    return
+  }
+
+  const hasLiked = comment.likedUserIds.includes(currentUser.value.id)
   const method = hasLiked ? 'DELETE' : 'POST'
 
   try {
@@ -95,14 +205,99 @@ const toggleCommentLike = async (comment) => {
     })
     if (res.ok) {
       if (hasLiked) {
-        comment.likedUserIds = comment.likedUserIds.filter(id => id !== user.value.id)
+        comment.likedUserIds = comment.likedUserIds.filter(id => id !== currentUser.value.id)
       } else {
-        comment.likedUserIds.push(user.value.id)
+        comment.likedUserIds.push(currentUser.value.id)
       }
+    } else if (res.status === 404) {
+      alert('Этот комментарий уже удалён')
+    } else {
+      alert('Ошибка при обработке лайка комментария')
     }
   } catch (e) {
     alert('Ошибка при обработке лайка комментария')
   }
+}
+
+const fetchPostWithComments = async (postId) => {
+  if (!currentUser.value) {
+    await router.push('/login')
+    return
+  }
+
+  if (selectedPost.value && selectedPost.value.id === postId) {
+    closePostView()
+    return
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+      credentials: 'include'
+    })
+    if (res.ok) {
+      const postWithComments = await res.json()
+      selectedPost.value = postWithComments
+      updatePostInList(postWithComments)
+
+      await loadAvatarsForPosts([postWithComments])
+    } else if (res.status === 404) {
+      alert('Этот пост уже удалён')
+      if (selectedPost.value && selectedPost.value.id === postId) {
+        closePostView()
+      }
+    } else {
+      alert('Не удалось загрузить пост')
+    }
+  } catch (e) {
+    alert('Ошибка при загрузке поста')
+  }
+}
+
+
+const submitComment = async () => {
+  if (!currentUser.value) {
+    await router.push('/login')
+    return
+  }
+
+  const trimmedContent = newCommentContent.value.trim()
+
+  if (!trimmedContent) {
+    alert('Комментарий не должен быть пустым')
+    return
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        postId: selectedPost.value.id,
+        content: trimmedContent
+      })
+    })
+
+    if (res.ok) {
+      newCommentContent.value = ''
+      await reloadSelectedPost()
+      await loadAvatarsForPosts([selectedPost.value])
+    } else if (res.status === 404) {
+      alert('Этот пост уже удалён')
+    } else {
+      const error = await res.json()
+      alert(error.message)
+    }
+  } catch (e) {
+    alert('Ошибка при отправке комментария')
+  }
+}
+
+const closePostView = () => {
+  selectedPost.value = null
+  newCommentContent.value = ''
 }
 
 onMounted(async () => {
@@ -111,57 +306,131 @@ onMounted(async () => {
   })
 
   if (response.ok) {
-    user.value = await response.json()
+    currentUser.value = await response.json()
   }
 
   await loadPosts()
 })
 </script>
 
-
 <template>
   <div class="container">
     <div class="user-posts-section">
-      <div v-if="posts.length === 0" class="no-posts">
+      <div v-if="isPostsLoaded && posts.length === 0" class="no-posts">
         Пользователи пока не создали ни одного поста
       </div>
 
-      <ul class="posts-list" v-else>
-        <li v-for="post in posts" :key="post.id" class="post-item">
-          <p class="post-content">{{ post.content }}</p>
-          <p class="post-date">Опубликовано: {{ new Date(post.createdAt).toLocaleString() }}</p>
-          <div class="post-actions">
-            <button @click="togglePostLike(post)">
+      <div v-else class="posts-list">
+        <div v-for="post in posts" :key="post.id" class="post-card">
+          <div class="author-info">
+            <div class="avatar-wrapper">
+              <img
+                  class="avatar-img"
+                  :src="avatarUrls[post.author.id] || PRELOAD_AVATAR"
+                  alt=""
+              />
+            </div>
+            <router-link
+                class="author"
+                :to="currentUser && currentUser.id === post.author.id ? '/profile/me' : `/profile/${post.author.id}`"
+            >
+              <strong>{{ post.author.username }}</strong>
+            </router-link>
+          </div>
+          <p class="content">{{ post.content }}</p>
+
+          <div class="post-stats">
+            <button
+                class="like-button"
+                :class="{ liked: post.likedUserIds.includes(currentUser?.id) }"
+                @click="togglePostLike(post)"
+            >
               ❤️ {{ post.likedUserIds.length }}
             </button>
-            <button @click="fetchPostWithComments(post.id)">
+            <button class="comment-button" @click="fetchPostWithComments(post.id)">
               💬 {{ post.commentCount }}
             </button>
-            <button @click="deletePost(post.id)">
+            <button
+                v-if="canDeletePost(post)"
+                class="delete-button"
+                @click="deletePost(post.id)"
+                title="Удалить пост"
+            >
               🗑️ Удалить
             </button>
+            <div class="meta">{{ new Date(post.createdAt).toLocaleString() }}</div>
           </div>
-        </li>
-      </ul>
 
-      <div v-if="selectedPost" class="selected-post">
-        <ul>
-          <li v-for="comment in selectedPost.comments" :key="comment.id" class="comment-item">
-            <p><strong>{{ comment.author.username }}:</strong> {{ comment.content }}</p>
-            <p>
-              <button @click="toggleCommentLike(comment)">
-                ❤️ {{ comment.likedUserIds.length }}
-              </button>
-            </p>
-          </li>
-        </ul>
+          <div v-if="selectedPost && selectedPost.id === post.id" class="selected-post">
+            <div class="comments-section">
+              <div v-if="selectedPost.comments?.length === 0" class="no-comments">Комментариев пока нет</div>
+              <div v-else class="comments-wrapper">
+                <div
+                    v-for="comment in selectedPost.comments"
+                    :key="comment.id"
+                    class="comment-card"
+                >
+                  <div class="author-info">
+                    <div class="avatar-wrapper">
+                      <img
+                          class="avatar-img"
+                          :src="avatarUrls[comment.author.id] || PRELOAD_AVATAR"
+                          alt=""
+                      />
+                    </div>
+                    <router-link
+                        class="author"
+                        :to="currentUser && currentUser.id === comment.author.id
+                        ? '/profile/me'
+                        : `/profile/${comment.author.id}`"
+                    >
+                      <strong>{{ comment.author.username }}</strong>
+                    </router-link>
+                  </div>
+                  <p class="content">{{ comment.content }}</p>
+                  <div class="comment-buttons-wrapper">
+                    <button
+                        class="like-button"
+                        :class="{ liked: comment.likedUserIds.includes(currentUser?.id) }"
+                        @click="toggleCommentLike(comment)"
+                    >
+                      ❤️ {{ comment.likedUserIds.length }}
+                    </button>
 
-        <button @click="selectedPost = null">← Назад</button>
+                    <button
+                        v-if="canDeleteComment(comment)"
+                        class="delete-button"
+                        @click="deleteComment(comment.id)"
+                        title="Удалить комментарий"
+                    >
+                      🗑️ Удалить
+                    </button>
+                    <div class="meta">{{ new Date(comment.createdAt).toLocaleString() }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="comment-form">
+              <textarea
+                  v-model="newCommentContent"
+                  placeholder="Напишите комментарий..."
+                  maxlength="1000"
+                  rows="3"
+              ></textarea>
+              <div class="comment-buttons-wrapper">
+                <button @click="submitComment">Отправить</button>
+                <button @click="closePostView">Назад</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+@import '@/assets/styles/avatars.css';
 @import '@/assets/styles/posts.css';
 </style>

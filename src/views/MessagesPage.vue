@@ -111,5 +111,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
+@import '@/assets/styles/avatars.css';
 @import '@/assets/styles/messages.css';
 </style>
