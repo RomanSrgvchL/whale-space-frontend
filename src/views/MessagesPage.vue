@@ -15,11 +15,6 @@ const loadChats = async () => {
     credentials: 'include'
   })
 
-  if (!userResponse.ok) {
-    await router.push('/home')
-    return
-  }
-
   const user = await userResponse.json()
   currentUserId.value = user.id
 
