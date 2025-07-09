@@ -6,6 +6,8 @@ export const RECONNECT_DELAY = 3_000
 export const PRELOAD_AVATAR = '/avatars/preload.jpg'
 export const DEFAULT_AVATAR = '/avatars/default.jpg'
 
+export const ROLE_ADMIN = 'ROLE_ADMIN'
+
 const DEV_CONFIG = {
     protocol: 'http',
     domain: 'localhost',
