@@ -20,6 +20,8 @@ const avatarUrls = reactive({avatar: PRELOAD_AVATAR})
 const isEditing = ref(false)
 const today = new Date().toISOString().split('T')[0]
 
+const newPostContent = ref('')
+
 const refreshAvatar = async () => {
   try {
     const refreshResponse = await fetch(`${API_BASE_URL}/users/me`, {
@@ -185,9 +187,9 @@ const cancelEditing = () => {
 
 const saveChanges = async () => {
   if (editableUserData.bio !== null) {
-    editableUserData.bio = editableUserData.bio.trim();
+    editableUserData.bio = editableUserData.bio.trim()
     if (editableUserData.bio === '') {
-      editableUserData.bio = null;
+      editableUserData.bio = null
     }
   }
 
@@ -229,6 +231,34 @@ const saveChanges = async () => {
   }
 }
 
+const submitCreatePost = async () => {
+  const trimmedContent = newPostContent.value.trim()
+  if (!trimmedContent) {
+    alert('Пост не должен быть пустым')
+    return
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/posts`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({content: trimmedContent})
+    })
+
+    const data = await response.json()
+
+    if (response.status === 201) {
+      newPostContent.value = ''
+    } else {
+      alert(data.message)
+    }
+  } catch (e) {
+    console.error('Ошибка при создании поста:', e)
+    alert('Ошибка соединения')
+  }
+}
+
 onMounted(async () => {
   const response = await fetch(`${API_BASE_URL}/users/me`, {
     credentials: 'include'
@@ -245,7 +275,6 @@ onMounted(async () => {
   role.value = user.value.role.replace(/^ROLE_/, '')
 
   loadEditableUserData()
-
   await refreshAvatar()
 })
 </script>
@@ -344,6 +373,27 @@ onMounted(async () => {
             <button @click="cancelEditing" type="button">Отменить</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="user-posts-section">
+      <form @submit.prevent="submitCreatePost" class="create-post-form">
+        <textarea
+            v-model="newPostContent"
+            placeholder="Что у вас нового?"
+            rows="4"
+            maxlength="2000"
+            required
+        ></textarea>
+        <button type="submit" class="create-post-button">Создать пост</button>
+      </form>
+
+      <hr class="post-divider"/>
+
+      <h2 class="posts-title">Мои посты</h2>
+
+      <div class="no-posts">
+        Вы пока не создали ни одного поста
       </div>
     </div>
   </div>
