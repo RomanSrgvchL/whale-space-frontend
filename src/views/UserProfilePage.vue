@@ -1,4 +1,5 @@
 <script setup>
+import UserPosts from '@/components/PostList.vue'
 import {ref, onMounted} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {API_BASE_URL, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
@@ -6,9 +7,10 @@ import {API_BASE_URL, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
 const route = useRoute()
 const router = useRouter()
 
-const user = ref(null)
+const currentUser = ref(null)
 const avatarUrl = ref(DEFAULT_AVATAR)
 const isLoadingChat = ref(false)
+const userId = Number(route.params.id)
 
 async function initiateChatWithUser(userId) {
   if (isLoadingChat.value) return
@@ -52,12 +54,12 @@ onMounted(async () => {
       credentials: 'include'
     })
 
-    user.value = await res.json()
+    currentUser.value = await res.json()
 
-    if (user.value.avatarFileName) {
+    if (currentUser.value.avatarFileName) {
       try {
         const avatarRes = await fetch(
-            `${API_BASE_URL}/users/avatar/${encodeURIComponent(user.value.avatarFileName)}`,
+            `${API_BASE_URL}/users/avatar/${encodeURIComponent(currentUser.value.avatarFileName)}`,
             {credentials: 'include'}
         )
         const data = await avatarRes.json()
@@ -85,52 +87,56 @@ onMounted(async () => {
                   alt="avatar"
               />
             </div>
-            <p class="username" id="username">{{ user?.username }}</p>
+            <p class="username" id="username">{{ currentUser?.username }}</p>
             <p class="registered-label">
               Дата регистрации:<br/>
               <span class="date" id="created-at">
-                {{ new Date(user?.createdAt).toLocaleString() }}
+                {{ new Date(currentUser?.createdAt).toLocaleString() }}
               </span>
             </p>
-            <p class="role" id="role">{{ user?.role.replace(/^ROLE_/, '') }}</p>
+            <p class="role" id="role">{{ currentUser?.role.replace(/^ROLE_/, '') }}</p>
             <button
-                v-if="user"
+                v-if="currentUser"
                 class="write-message-btn"
-                @click="initiateChatWithUser(user.id)"
+                @click="initiateChatWithUser(currentUser.id)"
                 :disabled="isLoadingChat"
             >
               {{ 'Написать' }}
             </button>
           </div>
         </div>
-        <div v-if="user" class="additional-info">
+        <div v-if="currentUser" class="additional-info">
           <div class="bio">
             <span>
               <strong>Биография:</strong>
-              <span class="value" :class="{ 'default-value': !user.bio }">
-              {{ user.bio || 'Не указано' }}
+              <span class="value" :class="{ 'default-value': !currentUser.bio }">
+              {{ currentUser.bio || 'Не указано' }}
               </span>
             </span>
           </div>
           <div class="gender">
             <span>
               <strong>Пол:</strong>
-              <span class="value" :class="{ 'default-value': !(user.gender === 'MALE' || user.gender === 'FEMALE') }">
-                {{ user.gender === 'MALE' ? 'Мужской' : user.gender === 'FEMALE' ? 'Женский' : 'Не указано' }}
+              <span class="value" :class="{ 'default-value': !(currentUser.gender === 'MALE' || currentUser.gender === 'FEMALE') }">
+                {{
+                  currentUser.gender === 'MALE' ? 'Мужской' : currentUser.gender === 'FEMALE' ? 'Женский' : 'Не указано'
+                }}
               </span>
             </span>
           </div>
           <div class="birthdate">
             <span>
               <strong>Дата рождения:</strong>
-              <span class="value" :class="{ 'default-value': !user.birthDate }">
-                {{ user.birthDate || 'Не указано' }}
+              <span class="value" :class="{ 'default-value': !currentUser.birthDate }">
+                {{ currentUser.birthDate || 'Не указано' }}
               </span>
             </span>
           </div>
         </div>
       </div>
     </div>
+
+    <UserPosts :userId="userId" noPostsMessage="Пользователь пока не создал ни одного поста"/>
   </div>
 </template>
 
