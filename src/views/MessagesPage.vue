@@ -96,7 +96,13 @@ onMounted(() => {
           </div>
           <div class="chat-info">
             <div class="chat-title">
-              <strong>{{ getOtherUser(chat).username }}</strong>
+              <router-link
+                  @click.stop
+                  class="chat-title"
+                  :to="`/profile/${getOtherUser(chat).id}`"
+              >
+                <strong>{{ getOtherUser(chat).username }}</strong>
+              </router-link>
             </div>
             <div
                 class="chat-preview"

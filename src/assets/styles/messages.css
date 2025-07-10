@@ -50,13 +50,18 @@
 }
 
 .chat-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1a3f8f;
-    margin: 0 0 4px 0;
-    white-space: pre;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: pre;
+    text-decoration: none;
+    font-size: 18px;
+    color: #324a80;
+    font-weight: 600;
+}
+
+.chat-title:hover {
+    color: #2a3b5f;
+    text-decoration: underline;
 }
 
 .chat-preview {

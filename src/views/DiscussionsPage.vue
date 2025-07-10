@@ -148,46 +148,46 @@ onMounted(async () => {
         <div
             v-for="discussion in discussions"
             :key="discussion.id"
-            class="discussion-card"
+            class="discussion-wrapper"
         >
-          <div class="discussion-info">
-            <div class="discussion-meta">
-              <div class="avatar-wrapper">
-                <img
-                    class="avatar-img"
-                    :src="avatarUrls[discussion.creator.id] || PRELOAD_AVATAR"
-                    alt=""
-                />
+          <div
+              class="discussion-card"
+              @click="openDiscussion(discussion.id)"
+              style="cursor: pointer;"
+          >
+            <div class="discussion-info">
+              <div class="discussion-meta">
+                <div class="avatar-wrapper">
+                  <img
+                      class="avatar-img"
+                      :src="avatarUrls[discussion.creator.id] || PRELOAD_AVATAR"
+                      alt=""
+                  />
+                </div>
+                <router-link
+                    @click.stop
+                    class="username"
+                    :to="currentUser && discussion.creator.id === currentUser.id
+                    ? '/profile/me'
+                    : `/profile/${discussion.creator.id}`"
+                >
+                  <strong>{{ discussion.creator.username }}</strong>
+                </router-link>
+                <span>(Создатель)</span>
               </div>
-              <router-link
-                  class="username"
-                  :to="currentUser && discussion.creator.id === currentUser.id
-                  ? '/profile/me'
-                  : `/profile/${discussion.creator.id}`"
-              >
-                <strong>{{ discussion.creator.username }}</strong>
-              </router-link>
+              <div class="discussion-title">{{ discussion.title }}</div>
             </div>
-            <div class="discussion-title">{{ discussion.title }}</div>
+            <div class="created-date">{{ formattedDate(discussion.createdAt) }}</div>
           </div>
 
-          <div class="button-group">
-            <button
-                v-if="isAdmin"
-                class="discussion-button delete-button"
-                @click="removeDiscussion(discussion.id)"
-            >
-              Удалить
-            </button>
-
-            <button
-                class="discussion-button"
-                @click="openDiscussion(discussion.id)"
-            >
-              Перейти
-            </button>
-          </div>
-          <div class="created-date">{{ formattedDate(discussion.createdAt) }}</div>
+          <span
+              v-if="isAdmin"
+              class="delete-icon"
+              @click.stop="removeDiscussion(discussion.id)"
+              title="Удалить обсуждение"
+          >
+            ❌
+          </span>
         </div>
       </div>
     </div>

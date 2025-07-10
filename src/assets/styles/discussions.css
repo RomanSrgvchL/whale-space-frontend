@@ -105,6 +105,7 @@
 }
 
 .discussion-card {
+    flex-grow: 1;
     border: 2px solid #3f8efc;
     border-radius: 12px;
     padding: 16px;
@@ -113,19 +114,28 @@
     justify-content: space-between;
     align-items: center;
     gap: 10px;
+    overflow: hidden;
     flex-wrap: nowrap;
 }
 
+.discussion-card:hover {
+    background-color: #e0f0ff;
+    box-shadow: 0 8px 20px rgba(63, 142, 252, 0.4);
+    border-color: #1a3f8f;
+
+}
+
 .discussion-info {
-    padding-right: 30px;
-    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
     min-width: 0;
-    gap: 10px;
+    gap: 5px;
 }
 
 .discussion-title {
     margin-left: 3px;
-    margin-top: 10px;
     font-size: 19px;
     white-space: pre;
     overflow: hidden;
@@ -134,7 +144,7 @@
     background: linear-gradient(180deg, #4b6cb7, #182848);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    max-width: 100%;
+    min-width: 0;
 }
 
 .discussion-meta {
@@ -173,12 +183,6 @@
     text-overflow: ellipsis;
 }
 
-.button-group {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
 .discussion-button {
     flex-shrink: 0;
     background-color: #4b6cb7;
@@ -213,4 +217,23 @@
 .avatar-wrapper {
     width: 45px;
     height: 45px;
+}
+
+.discussion-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+}
+
+.delete-icon {
+    cursor: pointer;
+    font-size: 18px;
+    color: red;
+    user-select: none;
+}
+
+.delete-icon:hover {
+    transform: scale(1.2);
 }

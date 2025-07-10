@@ -266,7 +266,7 @@ onMounted(async () => {
           <button
               v-for="user in pagination"
               :key="user"
-              :class="{ active: user === page.current }"
+              :class="{ active: currentUser === page.current }"
               :disabled="user === page.current"
               @click="fetchUsers(user)"
           >
