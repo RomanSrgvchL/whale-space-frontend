@@ -76,7 +76,8 @@ onMounted(() => {
       <div v-if="isChatsLoaded && chats.length === 0" class="no-chats-message">
         <p>
           У вас пока нет чатов<br>
-          <router-link to="/users">Напишите</router-link> кому-нибудь первым!
+          <router-link to="/users">Напишите</router-link>
+          кому-нибудь первым!
         </p>
       </div>
 
@@ -95,15 +96,15 @@ onMounted(() => {
             />
           </div>
           <div class="chat-info">
-            <div class="chat-title">
-              <router-link
-                  @click.stop
-                  class="chat-title"
-                  :to="`/profile/${getOtherUser(chat).id}`"
-              >
+            <router-link
+                @click.stop
+                class="chat-title"
+                :to="`/profile/${getOtherUser(chat).id}`"
+            >
+              <span class="chat-title-text">
                 <strong>{{ getOtherUser(chat).username }}</strong>
-              </router-link>
-            </div>
+              </span>
+            </router-link>
             <div
                 class="chat-preview"
                 v-html="formatPreviewText(chat)"
