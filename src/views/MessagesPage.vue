@@ -96,15 +96,15 @@ onMounted(() => {
             />
           </div>
           <div class="chat-info">
-            <router-link
-                @click.stop
-                class="chat-title"
-                :to="`/profile/${getOtherUser(chat).id}`"
-            >
-              <span class="chat-title-text">
-                <strong>{{ getOtherUser(chat).username }}</strong>
-              </span>
-            </router-link>
+            <div>
+              <router-link
+                  @click.stop
+                  class="chat-title"
+                  :to="`/profile/${getOtherUser(chat).id}`"
+              >
+              <strong>{{ getOtherUser(chat).username }}</strong>
+              </router-link>
+            </div>
             <div
                 class="chat-preview"
                 v-html="formatPreviewText(chat)"

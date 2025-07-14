@@ -59,11 +59,7 @@
     font-weight: 600;
 }
 
-.chat-title {
-    text-decoration: none;
-}
-
-.chat-title-text:hover {
+.chat-title:hover {
     color: #2a3b5f;
     text-decoration: underline;
 }
