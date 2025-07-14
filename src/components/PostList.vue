@@ -64,7 +64,7 @@ async function loadImagesForPosts(postsArray) {
     if (post.imageFileNames && post.imageFileNames.length > 0) {
       try {
         const queryParams = new URLSearchParams()
-        post.imageFileNames.forEach(filename => queryParams.append('filenames', filename))
+        post.imageFileNames.forEach(fileName => queryParams.append('fileNames', fileName))
         queryParams.append('bucket', 'POST_FILES_BUCKET')
 
         const res = await fetch(`${API_BASE_URL}/files/presigned/batch?${queryParams.toString()}`, {

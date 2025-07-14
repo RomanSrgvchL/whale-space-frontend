@@ -217,7 +217,7 @@ async function fetchMessageImageUrls(message) {
 
   try {
     const params = new URLSearchParams();
-    message.imageFileNames.forEach(name => params.append('filenames', name));
+    message.imageFileNames.forEach(fileName => params.append('fileNames', fileName));
     params.append('bucket', 'CHAT_MESSAGES_BUCKET');
 
     const response = await fetch(`${API_BASE_URL}/files/presigned/batch?${params.toString()}`, {
