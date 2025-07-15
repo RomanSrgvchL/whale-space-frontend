@@ -1,10 +1,11 @@
 <script setup>
-import {ref, onMounted, onUnmounted, nextTick, watch, reactive} from 'vue'
-import {useRouter, useRoute} from 'vue-router'
+import {nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {useRoute, useRouter} from 'vue-router'
 import SockJS from 'sockjs-client'
 import {Client} from '@stomp/stompjs'
 import {
-  API_BASE_URL, DEFAULT_AVATAR,
+  API_BASE_URL,
+  DEFAULT_AVATAR,
   HEARTBEAT_INCOMING,
   HEARTBEAT_OUTGOING,
   PRELOAD_AVATAR,
@@ -95,13 +96,20 @@ async function fetchAvatar(user) {
 
   if (user.avatarFileName) {
     try {
+      const queryParams = new URLSearchParams()
+      queryParams.append('fileName', user.avatarFileName)
+      queryParams.append('bucket', 'USER_AVATARS_BUCKET')
+
       const avatarResponse = await fetch(
-          `${API_BASE_URL}/users/avatar/${encodeURIComponent(user.avatarFileName)}`,
+          `${API_BASE_URL}/files/presigned?${queryParams.toString()}`,
           {credentials: 'include'}
       )
-      const avatarData = await avatarResponse.json()
 
-      avatarUrls[user.id] = avatarData.success ? avatarData.avatarUrl : DEFAULT_AVATAR
+      if (avatarResponse.ok) {
+        avatarUrls[user.id] = (await avatarResponse.json()).url
+      } else {
+        avatarUrls[user.id] = DEFAULT_AVATAR
+      }
     } catch {
       avatarUrls[user.id] = DEFAULT_AVATAR
     }

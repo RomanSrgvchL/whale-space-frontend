@@ -48,11 +48,19 @@ async function loadAvatarsForPosts(postsArray) {
     }
 
     try {
-      const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(userItem.avatarFileName)}`, {
-        credentials: 'include'
-      })
-      const dataAvatar = await resAvatar.json()
-      avatarUrls[userItem.id] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
+      const queryParams = new URLSearchParams()
+      queryParams.append('fileName', userItem.avatarFileName)
+      queryParams.append('bucket', 'USER_AVATARS_BUCKET')
+
+      const avatarResponse = await fetch(`${API_BASE_URL}/files/presigned?${queryParams.toString()}`,
+          {credentials: 'include'}
+      )
+
+      if (avatarResponse.ok) {
+        avatarUrls[userItem.id] =  (await avatarResponse.json()).url
+      } else {
+        avatarUrls[userItem.id] = DEFAULT_AVATAR
+      }
     } catch {
       avatarUrls[userItem.id] = DEFAULT_AVATAR
     }

@@ -41,11 +41,19 @@ const loadDiscussions = async () => {
     }
 
     try {
-      const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(discussion.creator.avatarFileName)}`, {
-        credentials: 'include'
-      })
-      const dataAvatar = await resAvatar.json()
-      avatarUrls[userId] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
+      const queryParams = new URLSearchParams()
+      queryParams.append('fileName', discussion.creator.avatarFileName)
+      queryParams.append('bucket', 'USER_AVATARS_BUCKET')
+
+      const avatarResponse = await fetch(`${API_BASE_URL}/files/presigned?${queryParams.toString()}`,
+          {credentials: 'include'}
+      )
+
+      if (avatarResponse.ok) {
+        avatarUrls[userId] =  (await avatarResponse.json()).url
+      } else {
+        avatarUrls[userId] = DEFAULT_AVATAR
+      }
     } catch {
       avatarUrls[userId] = DEFAULT_AVATAR
     }

@@ -46,11 +46,19 @@ async function fetchUsers(index = 0) {
       }
 
       try {
-        const resAvatar = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(user.avatarFileName)}`, {
-          credentials: 'include'
-        })
-        const dataAvatar = await resAvatar.json()
-        avatarUrls[user.id] = dataAvatar.success ? dataAvatar.avatarUrl : DEFAULT_AVATAR
+        const queryParams = new URLSearchParams()
+        queryParams.append('fileName', user.avatarFileName)
+        queryParams.append('bucket', 'USER_AVATARS_BUCKET')
+
+        const avatarResponse = await fetch(`${API_BASE_URL}/files/presigned?${queryParams.toString()}`,
+            {credentials: 'include'}
+        )
+
+        if (avatarResponse.ok) {
+          avatarUrls[user.id] =  (await avatarResponse.json()).url
+        } else {
+          avatarUrls[user.id] = DEFAULT_AVATAR
+        }
       } catch {
         avatarUrls[user.id] = DEFAULT_AVATAR
       }

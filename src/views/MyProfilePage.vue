@@ -96,13 +96,19 @@ const refreshAvatar = async () => {
 
     if (updatedUser.avatarFileName) {
       try {
-        const avatarResponse = await fetch(
-            `${API_BASE_URL}/users/avatar/${encodeURIComponent(updatedUser.avatarFileName)}`,
+        const queryParams = new URLSearchParams()
+        queryParams.append('fileName', updatedUser.avatarFileName)
+        queryParams.append('bucket', 'USER_AVATARS_BUCKET')
+
+        const avatarResponse = await fetch(`${API_BASE_URL}/files/presigned?${queryParams.toString()}`,
             {credentials: 'include'}
         )
-        const avatarData = await avatarResponse.json()
 
-        avatarUrls.avatar = avatarData.success ? avatarData.avatarUrl : DEFAULT_AVATAR
+        if (avatarResponse.ok) {
+          avatarUrls.avatar =  (await avatarResponse.json()).url
+        } else {
+          avatarUrls.avatar = DEFAULT_AVATAR
+        }
       } catch {
         avatarUrls.avatar = DEFAULT_AVATAR
       }
@@ -188,7 +194,7 @@ const submitForm = async (e) => {
     const data = await response.json()
 
     if (response.ok) {
-      flash(data.message, 'green')
+      flash('Аватар успешно загружен!', 'green')
       fileInput.value.value = ''
       selectedFileCheckmarkVisible.value = false
       await refreshAvatar()

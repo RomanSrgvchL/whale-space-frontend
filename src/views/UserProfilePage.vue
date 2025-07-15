@@ -58,12 +58,20 @@ onMounted(async () => {
 
     if (currentUser.value.avatarFileName) {
       try {
-        const avatarRes = await fetch(
-            `${API_BASE_URL}/users/avatar/${encodeURIComponent(currentUser.value.avatarFileName)}`,
+        const queryParams = new URLSearchParams()
+        queryParams.append('fileName', currentUser.value.avatarFileName)
+        queryParams.append('bucket', 'USER_AVATARS_BUCKET')
+
+        const avatarResponse = await fetch(
+            `${API_BASE_URL}/files/presigned?${queryParams.toString()}`,
             {credentials: 'include'}
         )
-        const data = await avatarRes.json()
-        avatarUrl.value = data.success ? data.avatarUrl : DEFAULT_AVATAR
+
+        if (avatarResponse.ok) {
+          avatarUrl.value =  (await avatarResponse.json()).url
+        } else {
+          avatarUrl.value = DEFAULT_AVATAR
+        }
       } catch {
         avatarUrl.value = DEFAULT_AVATAR
       }

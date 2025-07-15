@@ -39,11 +39,19 @@ const loadChats = async () => {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/users/avatar/${encodeURIComponent(otherUser.avatarFileName)}`, {
-        credentials: 'include'
-      })
-      const data = await res.json()
-      avatarUrls[chat.id] = data.success ? data.avatarUrl : DEFAULT_AVATAR
+      const queryParams = new URLSearchParams()
+      queryParams.append('fileName', otherUser.avatarFileName)
+      queryParams.append('bucket', 'USER_AVATARS_BUCKET')
+
+      const avatarResponse = await fetch(`${API_BASE_URL}/files/presigned?${queryParams.toString()}`,
+          {credentials: 'include'}
+      )
+
+      if (avatarResponse.ok) {
+        avatarUrls[chat.id] =  (await avatarResponse.json()).url
+      } else {
+        avatarUrls[chat.id] = DEFAULT_AVATAR
+      }
     } catch {
       avatarUrls[chat.id] = DEFAULT_AVATAR
     }
