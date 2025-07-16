@@ -186,7 +186,7 @@ const submitForm = async (e) => {
   formData.append('file', file)
 
   try {
-    const response = await fetch(`${API_BASE_URL}/users/avatar`, {
+    const response = await fetch(`${API_BASE_URL}/user/avatar`, {
       method: 'POST',
       credentials: 'include',
       body: formData
@@ -210,7 +210,7 @@ const deleteAvatar = async () => {
   flash('', '')
 
   try {
-    const response = await fetch(`${API_BASE_URL}/users/avatar`, {
+    const response = await fetch(`${API_BASE_URL}/user/avatar`, {
       method: 'DELETE',
       credentials: 'include'
     })
