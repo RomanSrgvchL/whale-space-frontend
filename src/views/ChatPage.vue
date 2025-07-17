@@ -186,7 +186,6 @@ async function onSubmit(e) {
   }
 
   const formData = new FormData()
-  formData.append('chatId', chatId)
   formData.append('content', trimmedContent)
 
   if (selectedFiles.value.length > 0) {
@@ -196,7 +195,7 @@ async function onSubmit(e) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/chatMessages`, {
+    const response = await fetch(`${API_BASE_URL}/chats/${chatId}/messages`, {
       method: 'POST',
       credentials: 'include',
       body: formData

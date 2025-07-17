@@ -192,7 +192,6 @@ async function onSubmit(event) {
   }
 
   const formData = new FormData()
-  formData.append('discussionId', discussionId)
   formData.append('content', trimmedContent)
 
   if (selectedFiles.value.length > 0) {
@@ -202,7 +201,7 @@ async function onSubmit(event) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/discussionMessages`, {
+    const response = await fetch(`${API_BASE_URL}/discussions/${discussionId}/messages`, {
       method: 'POST',
       credentials: 'include',
       body: formData
