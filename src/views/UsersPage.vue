@@ -6,7 +6,7 @@ import {API_BASE_URL, DEFAULT_AVATAR, PRELOAD_AVATAR} from '@/assets/scripts/con
 const router = useRouter()
 const users = ref([])
 const page = reactive({size: 6, current: 0, total: 0})
-const sort = reactive({field: 'createdAt', order: 'desc'})
+const sort = reactive({field: 'CREATED_AT', order: 'DESC'})
 const dialogUsername = ref('')
 const message = reactive({text: '', color: ''})
 
@@ -237,16 +237,16 @@ onMounted(async () => {
           <div class="sort-field">
             <span>Сортировать по:</span>
             <button
-                :class="{ active: sort.field === 'username' }"
-                :disabled="sort.field === 'username'"
-                @click="setSortField('username')"
+                :class="{ active: sort.field === 'USERNAME' }"
+                :disabled="sort.field === 'USERNAME'"
+                @click="setSortField('USERNAME')"
             >
               Имя пользователя
             </button>
             <button
-                :class="{ active: sort.field === 'createdAt' }"
-                :disabled="sort.field === 'createdAt'"
-                @click="setSortField('createdAt')"
+                :class="{ active: sort.field === 'CREATED_AT' }"
+                :disabled="sort.field === 'CREATED_AT'"
+                @click="setSortField('CREATED_AT')"
             >
               Дата регистрации
             </button>
@@ -254,16 +254,16 @@ onMounted(async () => {
           <div class="sort-order">
             <span>Порядок:</span>
             <button
-                :class="{ active: sort.order === 'asc' }"
-                :disabled="sort.order === 'asc'"
-                @click="setSortOrder('asc')"
+                :class="{ active: sort.order === 'ASC' }"
+                :disabled="sort.order === 'ASC'"
+                @click="setSortOrder('ASC')"
             >
               По возрастанию
             </button>
             <button
-                :class="{ active: sort.order === 'desc' }"
-                :disabled="sort.order === 'desc'"
-                @click="setSortOrder('desc')"
+                :class="{ active: sort.order === 'DESC' }"
+                :disabled="sort.order === 'DESC'"
+                @click="setSortOrder('DESC')"
             >
               По убыванию
             </button>
