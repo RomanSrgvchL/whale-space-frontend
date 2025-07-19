@@ -15,8 +15,16 @@
     border-radius: 8px;
     background-color: #f9f9f9;
     box-sizing: border-box;
+    white-space: pre-wrap;
 }
 
 .content-box a {
     color: blue;
+}
+
+.links {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 20px;
 }
