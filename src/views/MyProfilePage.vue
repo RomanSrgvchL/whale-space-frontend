@@ -332,7 +332,12 @@ const submitCreatePost = async () => {
   }
 
   const formData = new FormData()
-  formData.append('content', trimmedContent)
+
+  const post = {
+    content: trimmedContent
+  }
+
+  formData.append('post', new Blob([JSON.stringify(post)], { type: 'application/json' }))
 
   selectedFiles.value.forEach((file) => {
     formData.append(`files`, file)

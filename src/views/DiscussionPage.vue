@@ -192,7 +192,8 @@ async function onSubmit(event) {
   }
 
   const formData = new FormData()
-  formData.append('content', trimmedContent)
+
+  formData.append('message', new Blob([JSON.stringify(trimmedContent)], { type: 'application/json' }))
 
   if (selectedFiles.value.length > 0) {
     selectedFiles.value.forEach(file => {
