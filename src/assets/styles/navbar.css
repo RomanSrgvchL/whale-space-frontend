@@ -62,3 +62,52 @@ nav .right-side > *:not(:last-child)::after {
     will-change: transform;
     transform-origin: center;
 }
+
+@media (max-width: 768px) {
+    nav {
+        max-width: 100%;
+        margin-top: 5px;
+        padding: 5px;
+    }
+
+    nav .left-side > *:not(:last-child),
+    nav .right-side > *:not(:last-child) {
+        margin-right: 0;
+    }
+
+    nav .left-side > *:not(:last-child)::after,
+    nav .right-side > *:not(:last-child)::after {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    nav {
+        padding: 8px 5px;
+        min-height: 50px;
+    }
+
+    nav .left-side,
+    nav .right-side {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    nav .left-side > a,
+    nav .right-side > a {
+        padding: 6px 3px;
+        font-size: 13px;
+    }
+
+    nav .left-side,
+    nav .right-side {
+        width: 50%;
+        flex-direction: column;
+    }
+}
+
+@media print {
+    nav {
+        display: none;
+    }
+}

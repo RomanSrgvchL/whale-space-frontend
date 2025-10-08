@@ -180,3 +180,72 @@
     background-color: #3a54a0;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
+
+@media (max-width: 768px) {
+    .container {
+        gap: 10px;
+        min-height: 90vh !important;
+    }
+
+    .profile {
+        gap: 20px;
+        padding: 15px;
+        flex-direction: column;
+    }
+
+    .user-wrapper {
+        width: 100%;
+        gap: 20px;
+        flex-direction: column;
+    }
+
+    .user-card {
+        width: 100%;
+        padding: 0 12px;
+    }
+
+    .user-info {
+        gap: 12px;
+        padding: 12px 0;
+    }
+
+    .username {
+        font-size: 18px;
+        padding: 5px 10px;
+    }
+
+    .role,
+    .registered-label,
+    .date {
+        font-size: 14px;
+    }
+
+    .avatar-wrapper {
+        width: 100px;
+        height: 100px;
+    }
+
+    .additional-info {
+        width: 100%;
+        gap: 20px;
+        padding: 10px 12px;
+    }
+
+    .additional-info > div {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .additional-info > div span.value,
+    .additional-info > div span.value.default-value {
+        font-size: 14px;
+    }
+
+    .write-message-btn {
+        width: 100%;
+        font-size: 14px;
+        padding: 10px 16px;
+        height: 40px;
+        margin-top: 10px;
+    }
+}

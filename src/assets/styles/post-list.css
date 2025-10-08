@@ -252,3 +252,84 @@
     object-fit: cover;
     border: 1px solid #ccc;
 }
+
+@media (max-width: 768px) {
+    .posts-list {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .no-comments,
+    .no-posts {
+        max-width: 90%;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .post-card {
+        padding: 10px 12px;
+    }
+
+    .author {
+        font-size: 16px;
+    }
+
+    .content {
+        font-size: 14px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .meta {
+        margin-left: 0;
+        margin-top: 8px;
+        margin-right: 0;
+        order: 3;
+        width: 100%;
+        text-align: left;
+    }
+
+    .post-stats {
+        gap: 12px;
+        order: 2;
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .like-button,
+    .comment-button,
+    .delete-button {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    .post-images {
+        gap: 3px;
+    }
+
+    .post-image {
+        min-width: 120px;
+        min-height: 120px;
+        max-height: 200px;
+        max-width: 200px;
+    }
+
+    .comment-card {
+        padding: 6px 10px;
+    }
+
+    .comment-form textarea {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .comment-form button {
+        padding: 6px 14px;
+        font-size: 14px;
+    }
+
+    .avatar-wrapper {
+        width: 35px;
+        height: 35px;
+    }
+}
