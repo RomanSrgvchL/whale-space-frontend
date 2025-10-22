@@ -1,5 +1,6 @@
 <script setup>
 import UserPosts from '@/components/PostList.vue'
+import AdminLogs from '@/components/AdminLogs.vue'
 import {ref, onMounted, reactive} from 'vue'
 import {API_BASE_URL, PRELOAD_AVATAR, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
 
@@ -24,6 +25,30 @@ const newPostContent = ref('')
 const selectedFiles = ref([])
 const postFileInput = ref(null)
 
+const lockBodyScroll = (lock) => {
+  if (lock) {
+    document.body.style.overflow = 'hidden'
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`
+    }
+  } else {
+    document.body.style.overflow = ''
+    document.body.style.paddingRight = ''
+  }
+}
+
+const showAdminLogs = ref(false)
+
+const openAdminLogs = () => {
+  showAdminLogs.value = true
+  lockBodyScroll(true)
+}
+
+const closeAdminLogs = () => {
+  showAdminLogs.value = false
+  lockBodyScroll(false)
+}
 function onPostFilesChange(event) {
   postMessage.text = ''
   const files = Array.from(event.target.files)
@@ -368,6 +393,8 @@ const submitCreatePost = async () => {
 }
 
 onMounted(async () => {
+  lockBodyScroll(false)
+
   const response = await fetch(`${API_BASE_URL}/users/me`, {
     credentials: 'include'
   })
@@ -385,6 +412,11 @@ onMounted(async () => {
 <template>
   <div class="container">
     <div class="profile layout">
+      <AdminLogs
+          :show="showAdminLogs"
+          @close="closeAdminLogs"
+      />
+
       <div class="avatar-actions">
         <form
             ref="formRef"
@@ -478,6 +510,14 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+    <button
+        v-if="currentUser?.role === 'ROLE_ADMIN'"
+        @click="openAdminLogs"
+        class="admin-logs-btn"
+    >
+      📊 Логи активности пользователей
+    </button>
 
     <div class="posts-creation">
       <form @submit.prevent="submitCreatePost" class="create-post-form">
