@@ -1,6 +1,7 @@
 <script setup>
 import UserPosts from '@/components/PostList.vue'
 import AdminLogs from '@/components/AdminLogs.vue'
+import SessionList from '@/components/SessionList.vue'
 import {ref, onMounted, reactive} from 'vue'
 import {API_BASE_URL, PRELOAD_AVATAR, DEFAULT_AVATAR} from '@/assets/scripts/config.js'
 
@@ -49,6 +50,19 @@ const closeAdminLogs = () => {
   showAdminLogs.value = false
   lockBodyScroll(false)
 }
+
+const showSessions = ref(false)
+
+const openSessions = () => {
+  showSessions.value = true
+  lockBodyScroll(true)
+}
+
+const closeSessions = () => {
+  showSessions.value = false
+  lockBodyScroll(false)
+}
+
 function onPostFilesChange(event) {
   postMessage.text = ''
   const files = Array.from(event.target.files)
@@ -417,6 +431,11 @@ onMounted(async () => {
           @close="closeAdminLogs"
       />
 
+      <SessionList
+          :show="showSessions"
+          @close="closeSessions"
+      />
+
       <div class="avatar-actions">
         <form
             ref="formRef"
@@ -511,13 +530,22 @@ onMounted(async () => {
       </div>
     </div>
 
-    <button
-        v-if="currentUser?.role === 'ROLE_ADMIN'"
-        @click="openAdminLogs"
-        class="admin-logs-btn"
-    >
-      📊 Логи активности пользователей
-    </button>
+    <div class="actions-row">
+      <button
+          @click="openSessions"
+          class="sessions-btn"
+      >
+        🔐 Управление сессиями
+      </button>
+
+      <button
+          v-if="currentUser?.role === 'ROLE_ADMIN'"
+          @click="openAdminLogs"
+          class="admin-logs-btn"
+      >
+        📊 Логи активности
+      </button>
+    </div>
 
     <div class="posts-creation">
       <form @submit.prevent="submitCreatePost" class="create-post-form">
