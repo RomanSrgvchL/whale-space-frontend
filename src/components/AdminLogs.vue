@@ -54,7 +54,6 @@ const handleKeydown = (e) => {
 }
 
 onMounted(() => {
-  fetchLogs()
   document.addEventListener('keydown', handleKeydown)
 })
 </script>
