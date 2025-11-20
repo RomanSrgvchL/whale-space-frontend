@@ -54,9 +54,8 @@ const logoutFromDevice = async (sessionId, isCurrentSession = false) => {
       throw new Error(errorMessage)
     }
 
-    // Если выходим с текущего устройства - перенаправляем на логин
     if (isCurrentSession) {
-      router.push('/login')
+      await router.push('/home')
       return
     }
 
@@ -95,7 +94,7 @@ const logoutFromAllDevices = async (includeCurrent = false) => {
     await fetchSessions()
 
     if (includeCurrent) {
-      router.push('/login')
+      await router.push('/home')
     }
   } catch (err) {
     console.error('Ошибка выхода со всех устройств:', err)
